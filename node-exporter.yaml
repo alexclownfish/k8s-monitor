@@ -1,0 +1,76 @@
+apiVersion: apps/v1 
+kind: DaemonSet
+metadata:
+  name: node-exporter 
+  namespace: ops 
+  labels:
+    k8s-app: node-exporter 
+spec:
+  selector:
+    matchLabels:
+      k8s-app: node-exporter
+      version: v1.0.1
+  template:
+    metadata:
+      labels:
+        k8s-app: node-exporter 
+        version: v1.0.1
+    spec:
+      containers:
+        - name: prometheus-node-exporter
+          image: "prom/node-exporter:v1.0.1"
+          #imagePullPolicy: "Always"
+          args:
+            - --path.procfs=/host/proc
+            - --path.sysfs=/host/sys
+          ports:
+            - name: metrics
+              containerPort: 9100
+              hostPort: 9100
+          volumeMounts:
+            - name: proc
+              mountPath: /host/proc
+              readOnly:  true
+            - name: sys
+              mountPath: /host/sys
+              readOnly: true
+          resources:
+            limits:
+              cpu: 10m
+              memory: 50Mi
+            requests:
+              cpu: 10m
+              memory: 50Mi
+      hostNetwork: true
+      hostPID: true
+      hostIPC: true
+      volumes:
+        - name: proc
+          hostPath:
+            path: /proc
+        - name: sys
+          hostPath:
+            path: /sys
+        - name: rootfs
+          hostPath:
+            path: /
+        - name: dev
+          hostPath:
+            path: /dev
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: node-exporter
+  namespace: ops
+  annotations:
+    prometheus.io/scrape: "true"
+spec:
+  clusterIP: None
+  ports:
+    - name: metrics
+      port: 9100
+      protocol: TCP
+      targetPort: 9100
+  selector:
+    k8s-app: node-exporter

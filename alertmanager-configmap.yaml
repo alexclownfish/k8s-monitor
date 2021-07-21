@@ -1,0 +1,52 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: alertmanager-config
+  namespace: ops
+data:
+  alertmanager.yml: |-
+    global:
+      # 在没有报警的情况下声明为已解决的时间
+      resolve_timeout: 5m
+      # 配置邮件发送信息
+      smtp_smarthost: 'smtp.163.com:465'
+      smtp_from: 'ywz0207@163.com'
+      smtp_auth_username: 'ywz0207@163.com'
+      smtp_auth_password: 'DKUGGXZLZAHZYAXG'
+      smtp_hello: '163.com'
+      smtp_require_tls: false
+    # 所有报警信息进入后的根路由，用来设置报警的分发策略
+    route:
+      # 这里的标签列表是接收到报警信息后的重新分组标签，例如，接收到的报警信息里面有许多具有 cluster=A 和 alertname=LatncyHigh 这样的标签的报警信息将会批量被聚合到一个分组里面
+      group_by: ['alertname', 'cluster']
+      # 当一个新的报警分组被创建后，需要等待至少group_wait时间来初始化通知，这种方式可以确保您能有足够的时间为同一分组来获取多个警报，然后一起触发这个报警信息。
+      group_wait: 30s
+ 
+      # 当第一个报警发送后，等待'group_interval'时间来发送新的一组报警信息。
+      group_interval: 5m
+ 
+      # 如果一个报警信息已经发送成功了，等待'repeat_interval'时间来重新发送他们
+      repeat_interval: 5m
+ 
+      # 默认的receiver：如果一个报警没有被一个route匹配，则发送给默认的接收器
+      receiver: default
+ 
+      # 上面所有的属性都由所有子路由继承，并且可以在每个子路由上进行覆盖。
+      routes:
+      - receiver: email
+        group_wait: 10s
+        match:
+          team: node
+    templates:
+      - '/etc/config/template/email.tmpl'
+    receivers:
+    - name: 'default'
+      email_configs:
+      - to: '21178857@qq.com'
+        html: '{{ template "email.html" . }}'
+        headers: { Subject: "[WARN] Prometheus 告警邮件" }
+        #send_resolved: true
+    - name: 'email'
+      email_configs:
+      - to: 'wenzheyang58@gmail.com'
+        send_resolved: true

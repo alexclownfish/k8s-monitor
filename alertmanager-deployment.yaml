@@ -1,0 +1,115 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: alertmanager
+  namespace: ops
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      k8s-app: alertmanager
+      version: v0.14.0
+  template:
+    metadata:
+      labels:
+        k8s-app: alertmanager
+        version: v0.14.0
+    spec:
+      containers:
+        - name: prometheus-alertmanager
+          image: "prom/alertmanager:v0.14.0"
+          imagePullPolicy: "IfNotPresent"
+          args:
+            - --config.file=/etc/config/alertmanager.yml
+            - --storage.path=/data
+            - --web.external-url=/
+          ports:
+            - containerPort: 9093
+          readinessProbe:
+            httpGet:
+              path: /#/status
+              port: 9093
+            initialDelaySeconds: 30
+            timeoutSeconds: 30
+          volumeMounts:
+            - name: config-volume
+              mountPath: /etc/config
+#自定义告警模板
+            - name: config-template-volume
+              mountPath: /etc/config/template
+            - name: storage-volume
+              mountPath: "/data"
+              subPath: ""
+            - mountPath: /etc/localtime
+              name: timezone
+          resources:
+            limits:
+              cpu: 10m
+              memory: 200Mi
+            requests:
+              cpu: 10m
+              memory: 100Mi
+        - name: prometheus-alertmanager-configmap-reload
+          image: "jimmidyson/configmap-reload:v0.1"
+          imagePullPolicy: "IfNotPresent"
+          args:
+            - --volume-dir=/etc/config
+            - --webhook-url=http://localhost:9093/-/reload
+          volumeMounts:
+            - name: config-volume
+              mountPath: /etc/config
+              readOnly: true
+          resources:
+            limits:
+              cpu: 10m
+              memory: 200Mi
+            requests:
+              cpu: 10m
+              memory: 100Mi
+      volumes:
+        - name: config-volume
+          configMap:
+            name: alertmanager-config
+        - name: config-template-volume
+          configMap:
+            name: alertmanager-template-volume
+        - name: storage-volume
+          persistentVolumeClaim:
+            claimName: alertmanager
+        - name: timezone
+          hostPath:
+            path: /usr/share/zoneinfo/Asia/Shanghai
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: alertmanager
+  namespace: ops
+spec:
+  storageClassName: nfs-storage
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: "2Gi"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: alertmanager
+  namespace: ops
+  labels:
+    kubernetes.io/cluster-service: "true"
+    addonmanager.kubernetes.io/mode: Reconcile
+    kubernetes.io/name: "Alertmanager"
+spec:
+  type: "NodePort"
+  ports:
+    - name: http
+      port: 80
+      protocol: TCP
+      targetPort: 9093
+      nodePort: 30093
+  selector:
+    k8s-app: alertmanager
+

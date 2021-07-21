@@ -1,0 +1,72 @@
+apiVersion: apps/v1
+kind: Deployment 
+metadata:
+  name: grafana
+  namespace: ops
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: grafana
+  template:
+    metadata:
+      labels:
+        app: grafana
+    spec:
+      containers:
+      - name: grafana
+        image: grafana/grafana:7.1.0
+        ports:
+          - containerPort: 3000
+            protocol: TCP
+        resources:
+          limits:
+            cpu: 100m            
+            memory: 256Mi          
+          requests:
+            cpu: 100m            
+            memory: 256Mi
+        volumeMounts:
+          - name: grafana-data
+            mountPath: /var/lib/grafana
+            subPath: grafana
+          - mountPath: /etc/localtime
+            name: timezone
+      securityContext:
+        fsGroup: 472
+        runAsUser: 472
+      volumes:
+      - name: grafana-data
+        persistentVolumeClaim:
+          claimName: grafana
+      - name: timezone
+        hostPath:
+          path: /usr/share/zoneinfo/Asia/Shanghai 
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: grafana 
+  namespace: ops
+spec:
+  storageClassName: "nfs-storage"
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 5Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: grafana
+  namespace: ops
+spec:
+  type: NodePort
+  ports:
+  - port : 80
+    targetPort: 3000
+    nodePort: 30030
+  selector:
+    app: grafana
+

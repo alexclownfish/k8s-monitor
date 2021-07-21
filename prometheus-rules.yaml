@@ -1,0 +1,129 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: prometheus-rules
+  namespace: ops
+data:
+  general.rules: |
+    groups:
+    - name: general.rules
+      rules:
+      - alert: InstanceDown
+        expr: up == 0
+        for: 1m
+        labels:
+          severity: error 
+        annotations:
+          summary: "Instance {{ $labels.instance }} 停止工作"
+          description: "{{ $labels.instance }} job {{ $labels.job }} 已经停止5分钟以上."
+               
+  node.rules: |
+    groups:
+    - name: node.rules
+      rules:
+      - alert: NodeFilesystemUsage
+        expr: |
+          100 - (node_filesystem_free_bytes / node_filesystem_size_bytes) * 100 > 70
+        for: 1m
+        labels:
+          severity: warning 
+        annotations:
+          summary: "Instance {{ $labels.instance }} : {{ $labels.mountpoint }} 分区使用率过高"
+          description: "{{ $labels.instance }}: {{ $labels.mountpoint }} 分区使用大于70% (当前值: {{ $value }})"
+
+      - alert: NodeMemoryUsage
+        expr: |
+          100 - (node_memory_MemFree_bytes+node_memory_Cached_bytes+node_memory_Buffers_bytes) / node_memory_MemTotal_bytes * 100 > 60
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Instance {{ $labels.instance }} 内存使用率过高"
+          description: "{{ $labels.instance }}内存使用大于60% (当前值: {{ $value }})"
+
+      - alert: NodeCPUUsage    
+        expr: |
+          100 - (avg(irate(node_cpu_seconds_total{mode="idle"}[5m])) by (instance) * 100) > 60 
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Instance {{ $labels.instance }} CPU使用率过高"       
+          description: "{{ $labels.instance }}CPU使用大于60% (当前值: {{ $value }})"
+
+      - alert: KubeNodeNotReady
+        expr: |
+          kube_node_status_condition{condition="Ready",status="true"} == 0
+        for: 1m
+        labels:
+          severity: error
+        annotations:
+          message: '{{ $labels.node }} 已经有10多分钟没有准备好了.'
+
+  pod.rules: |
+    groups:
+    - name: pod.rules
+      rules:
+      - alert: PodCPUUsage
+        expr: |
+           sum(rate(container_cpu_usage_seconds_total{image!=""}[1m]) * 100) by (pod_name, namespace) > 5
+        for: 5m
+        labels:
+          severity: warning 
+        annotations:
+          summary: "命名空间: {{ $labels.namespace }} | Pod名称: {{ $labels.pod_name }} CPU使用大于80% (当前值: {{ $value }})"
+
+      - alert: PodMemoryUsage
+        expr: |
+           sum(container_memory_rss{image!=""}) by(pod_name, namespace) / 
+           sum(container_spec_memory_limit_bytes{image!=""}) by(pod_name, namespace) * 100 != +inf > 80
+        for: 5m
+        labels:
+          severity: error 
+        annotations:
+          summary: "命名空间: {{ $labels.namespace }} | Pod名称: {{ $labels.pod_name }} 内存使用大于80% (当前值: {{ $value }})"
+
+      - alert: PodNetworkReceive
+        expr: |
+           sum(rate(container_network_receive_bytes_total{image!="",name=~"^k8s_.*"}[5m]) /1000) by (pod_name,namespace)  > 30000
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "命名空间: {{ $labels.namespace }} | Pod名称: {{ $labels.pod_name }} 入口流量大于30MB/s (当前值: {{ $value }}K/s)"           
+
+      - alert: PodNetworkTransmit
+        expr: | 
+           sum(rate(container_network_transmit_bytes_total{image!="",name=~"^k8s_.*"}[5m]) /1000) by (pod_name,namespace) > 30000
+        for: 5m
+        labels:
+          severity: warning 
+        annotations:
+          summary: "命名空间: {{ $labels.namespace }} | Pod名称: {{ $labels.pod_name }} 出口流量大于30MB/s (当前值: {{ $value }}/K/s)"
+
+      - alert: PodRestart
+        expr: |
+           sum(changes(kube_pod_container_status_restarts_total[1m])) by (pod,namespace) > 0
+        for: 1m
+        labels:
+          severity: warning 
+        annotations:
+          summary: "命名空间: {{ $labels.namespace }} | Pod名称: {{ $labels.pod }} Pod重启 (当前值: {{ $value }})"
+
+      - alert: PodFailed
+        expr: |
+           sum(kube_pod_status_phase{phase="Failed"}) by (pod,namespace) > 0
+        for: 5s
+        labels:
+          severity: error 
+        annotations:
+          summary: "命名空间: {{ $labels.namespace }} | Pod名称: {{ $labels.pod }} Pod状态Failed (当前值: {{ $value }})"
+
+      - alert: PodPending
+        expr: | 
+           sum(kube_pod_status_phase{phase="Pending"}) by (pod,namespace) > 0
+        for: 1m
+        labels:
+          severity: error
+        annotations:
+          summary: "命名空间: {{ $labels.namespace }} | Pod名称: {{ $labels.pod }} Pod状态Pending (当前值: {{ $value }})"
