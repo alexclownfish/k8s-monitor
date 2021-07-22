@@ -22,7 +22,24 @@ curl -X POST http://ClusterIP:PORT/-/reload
 ```
 资源下载：[https://github.com/alexclownfish/k8s-monitor](https://github.com/alexclownfish/k8s-monitor)
 
-grafana模板我这边进行了更新，还是在原目录可以进行load使用，若有问题，可以call me
+邮件报警邮箱收到的触发时间是UTC时间,可以在alertmanager-template.yaml自定义模板中，修改触发事件
+```
+解决
+如果要改成北京时间的话可以这么改：
+
+原来的告警模板的触发时间是这样子的：
+```
+触发时间: {{ .StartsAt.Format "2020-01-02 15:04:05" }}
+```
+我们可以改成这样子的
+```
+{{ (.StartsAt.Add 28800e9).Format "2020-01-02 15:04:05" }}
+```
+其中 Add 28800e9  就是表示加8个小时。
+```
+
+grafana模板（运维资源全览，节点资源全览）我这边进行了更新，还是在原目录可以进行load使用，若有问题，可以call me
+
 
 ## 部署正文
 ### 创建ops命名空间
