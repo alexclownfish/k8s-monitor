@@ -21,6 +21,9 @@ prometheus-rules中的规则字段可能随着版本更新出现变化，如有�
 curl -X POST http://ClusterIP:PORT/-/reload
 ```
 资源下载：[https://github.com/alexclownfish/k8s-monitor](https://github.com/alexclownfish/k8s-monitor)
+
+grafana模板我这边进行了更新，还是在原目录可以进行load使用，若有问题，可以call me
+
 ## 部署正文
 ### 创建ops命名空间
 ```
