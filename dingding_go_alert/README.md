@@ -1,4 +1,9 @@
+# go环境部署及打包钉钉报警插件
+## 其他两个平台实时同步
+* 个人Blog：https://alexcld.com
+* CSDN：https://blog.csdn.net/weixin_45509582
 ## linux安装go1.11.5
+
 下载解压
 ```
 mkdir ~/go && cd ~/go
