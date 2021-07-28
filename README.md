@@ -3,7 +3,7 @@
 * 个人Blog：https://alexcld.com
 * CSDN：https://blog.csdn.net/weixin_45509582
 ## 摘要
-k8s搭建完成并正常使用的基础上，需要有一个动态存储
+k8s搭建完成并正常使用的基础上，需要有一个动态存储。
 我的环境：
 k8s版本    | Kubeadm部署 v1.18.0
 -------- | -----
