@@ -607,13 +607,13 @@ data:
       rules:
       - alert: NodeFilesystemUsage
         expr: |
-          100 - (node_filesystem_free_bytes / node_filesystem_size_bytes) * 100 > 70
+          100 - (node_filesystem_free_bytes / node_filesystem_size_bytes) * 100 > 60
         for: 1m
         labels:
           severity: warning 
         annotations:
           summary: "Instance {{ $labels.instance }} : {{ $labels.mountpoint }} 分区使用率过高"
-          description: "{{ $labels.instance }}: {{ $labels.mountpoint }} 分区使用大于70% (当前值: {{ $value }})"
+          description: "{{ $labels.instance }}: {{ $labels.mountpoint }} 分区使用大于60% (当前值: {{ $value }})"
 
       - alert: NodeMemoryUsage
         expr: |
@@ -650,40 +650,39 @@ data:
       rules:
       - alert: PodCPUUsage
         expr: |
-           sum(rate(container_cpu_usage_seconds_total{image!=""}[1m]) * 100) by (pod_name, namespace) > 5
+           sum by(pod, namespace) (rate(container_cpu_usage_seconds_total{image!=""}[5m]) * 100) > 5
         for: 5m
         labels:
           severity: warning 
         annotations:
-          summary: "命名空间: {{ $labels.namespace }} | Pod名称: {{ $labels.pod_name }} CPU使用大于80% (当前值: {{ $value }})"
+          summary: "命名空间: {{ $labels.namespace }} | Pod名称: {{ $labels.pod }} CPU使用大于80% (当前值: {{ $value }})"
 
       - alert: PodMemoryUsage
         expr: |
-           sum(container_memory_rss{image!=""}) by(pod_name, namespace) / 
-           sum(container_spec_memory_limit_bytes{image!=""}) by(pod_name, namespace) * 100 != +inf > 80
+           sum(container_memory_rss{image!=""}) by(pod, namespace) / sum(container_spec_memory_limit_bytes{image!=""}) by(pod, namespace) * 100 != +inf > 80
         for: 5m
         labels:
           severity: error 
         annotations:
-          summary: "命名空间: {{ $labels.namespace }} | Pod名称: {{ $labels.pod_name }} 内存使用大于80% (当前值: {{ $value }})"
+          summary: "命名空间: {{ $labels.namespace }} | Pod名称: {{ $labels.pod }} 内存使用大于80% (当前值: {{ $value }})"
 
       - alert: PodNetworkReceive
         expr: |
-           sum(rate(container_network_receive_bytes_total{image!="",name=~"^k8s_.*"}[5m]) /1000) by (pod_name,namespace)  > 30000
+           sum(rate(container_network_receive_bytes_total{image!="",name=~"^k8s_.*"}[5m]) /1000) by (pod,namespace) > 30000
         for: 5m
         labels:
           severity: warning
         annotations:
-          summary: "命名空间: {{ $labels.namespace }} | Pod名称: {{ $labels.pod_name }} 入口流量大于30MB/s (当前值: {{ $value }}K/s)"           
+          summary: "命名空间: {{ $labels.namespace }} | Pod名称: {{ $labels.pod }} 入口流量大于30MB/s (当前值: {{ $value }}K/s)"           
 
       - alert: PodNetworkTransmit
         expr: | 
-           sum(rate(container_network_transmit_bytes_total{image!="",name=~"^k8s_.*"}[5m]) /1000) by (pod_name,namespace) > 30000
+           sum(rate(container_network_transmit_bytes_total{image!="",name=~"^k8s_.*"}[5m]) /1000) by (pod,namespace) > 30000
         for: 5m
         labels:
           severity: warning 
         annotations:
-          summary: "命名空间: {{ $labels.namespace }} | Pod名称: {{ $labels.pod_name }} 出口流量大于30MB/s (当前值: {{ $value }}/K/s)"
+          summary: "命名空间: {{ $labels.namespace }} | Pod名称: {{ $labels.pod }} 出口流量大于30MB/s (当前值: {{ $value }}/K/s)"
 
       - alert: PodRestart
         expr: |
