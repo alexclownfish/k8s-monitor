@@ -55,13 +55,16 @@ touch alertGo.go
 ```
 ```
 package main
+
 import (
 	"bytes"
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"os"
 	"strings"
 	"time"
+
 	"github.com/gin-gonic/gin"
 )
 
@@ -70,12 +73,11 @@ import (
 //)
 type Message struct {
 	MsgType string `json:"msgtype"`
-	Text struct {
-		Content string `json:"content"`
-		Mentioned_list string `json:"mentioned_list"`
+	Text    struct {
+		Content               string `json:"content"`
+		Mentioned_list        string `json:"mentioned_list"`
 		Mentioned_mobile_list string `json:"mentioned_mobile_list"`
 	} `json:"text"`
-
 }
 type Alert struct {
 	Labels      map[string]string `json:"labels"`
@@ -83,6 +85,7 @@ type Alert struct {
 	StartsAt    time.Time         `json:"startsAt"`
 	EndsAt      time.Time         `json:"endsAt"`
 }
+
 //通知消息结构体
 type Notification struct {
 	Version           string            `json:"version"`
@@ -104,16 +107,18 @@ func getAlertInfo(notification Notification) string {
 	//重新定义报警消息
 	var newbuffer bytes.Buffer
 	//定义恢复消息
-	var  recoverbuffer bytes.Buffer
-	if notification.Status == "resolved"{
-		for _,alert := range notification.Alerts{
+	var recoverbuffer bytes.Buffer
+	fmt.Println(notification)
+	fmt.Println(notification.Status)
+	if notification.Status == "resolved" {
+		for _, alert := range notification.Alerts {
 			recoverbuffer.WriteString(fmt.Sprintf("状态已经恢复!!!!\n"))
 			recoverbuffer.WriteString(fmt.Sprintf(" **项目: 恢复时间:**%s\n\n", alert.StartsAt.Add(8*time.Hour).Format("2006-01-02 15:04:05")))
 			recoverbuffer.WriteString(fmt.Sprintf("项目: 告警主题: %s \n", alert.Annotations["summary"]))
 
 		}
 
-	}else {
+	} else {
 		for _, alert := range notification.Alerts {
 			newbuffer.WriteString(fmt.Sprintf("==============Start============ \n"))
 			newbuffer.WriteString(fmt.Sprintf("项目: 告警程序：prometheus_alert_email \n"))
@@ -127,13 +132,9 @@ func getAlertInfo(notification Notification) string {
 		}
 	}
 
-
-
-
-
-	if notification.Status == "resolved"{
+	if notification.Status == "resolved" {
 		m.Text.Content = recoverbuffer.String()
-	}else {
+	} else {
 		m.Text.Content = newbuffer.String()
 	}
 	jsons, err := json.Marshal(m)
@@ -143,6 +144,7 @@ func getAlertInfo(notification Notification) string {
 	resp := string(jsons)
 	return resp
 }
+
 //钉钉报警
 func SendAlertDingMsg(msg string) {
 	defer func() {
@@ -150,9 +152,8 @@ func SendAlertDingMsg(msg string) {
 			fmt.Println("err")
 		}
 	}()
-
-		token := os.Getenv("token")
-		webHook_Alert := "https://oapi.dingtalk.com/robot/send?access_token=" + token
+	token := os.Getenv("token")
+	webHook_Alert := "https://oapi.dingtalk.com/robot/send?access_token=" + token
 	fmt.Println("开始发送报警消息!!!")
 	fmt.Println(webHook_Alert)
 	//content := `{"msgtype": "text",
@@ -177,17 +178,17 @@ func SendAlertDingMsg(msg string) {
 	}
 	defer resp.Body.Close()
 }
-func AlertInfo(c *gin.Context)  {
+func AlertInfo(c *gin.Context) {
 	var notification Notification
 	fmt.Println("接收到的信息是....")
 	fmt.Println(notification)
 	err := c.BindJSON(&notification)
-	fmt.Printf("%#v",notification)
+	fmt.Printf("%#v", notification)
 	if err != nil {
 		fmt.Println("绑定信息错误!!!")
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
-	}else{
+	} else {
 		fmt.Println("绑定信息成功")
 	}
 	fmt.Println("绑定信息成功!!!")
@@ -197,15 +198,14 @@ func AlertInfo(c *gin.Context)  {
 	SendAlertDingMsg(msg)
 
 }
-func main()  {
+func main() {
 	t := gin.Default()
-	t.POST("/Alert",AlertInfo)
-	t.GET("/",func(c *gin.Context){
-		c.String(http.StatusOK,"关于alertmanager实现钉钉报警的方法v6！！！/n新增了报警恢复机制！！！")
+	t.POST("/Alert", AlertInfo)
+	t.GET("/", func(c *gin.Context) {
+		c.String(http.StatusOK, `<h1>关于alertmanager实现钉钉报警的方法V6！！！</h1>`+"\n新增了报警恢复机制！！！")
 	})
 	t.Run(":8088")
 }
-
 ```
 最后将go文件打包为linux二进制可运行程序
 ```
