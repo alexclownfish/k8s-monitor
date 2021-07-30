@@ -65,9 +65,9 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-const (
-	webHook_Alert = "https://oapi.dingtalk.com/robot/send?access_token=xxxxx" ##替换成自己的url_token 
-)
+//const (
+//	webHook_Alert = "https://oapi.dingtalk.com/robot/send?access_token=724402cd85e7e80aa5bbbb7d7a89c74db6a3a8bd8fac4c91923ed3f906664ba4"
+//)
 type Message struct {
 	MsgType string `json:"msgtype"`
 	Text struct {
@@ -101,25 +101,38 @@ func getAlertInfo(notification Notification) string {
 	var m Message
 	m.MsgType = "text"
 	//告警消息
-	//重新定义消息
+	//重新定义报警消息
 	var newbuffer bytes.Buffer
+	//定义恢复消息
+	var  recoverbuffer bytes.Buffer
+	if notification.Status == "resolved"{
+		for _,alert := range notification.Alerts{
+			recoverbuffer.WriteString(fmt.Sprintf("状态已经恢复!!!!\n"))
+			recoverbuffer.WriteString(fmt.Sprintf(" **项目: 恢复时间:**%s\n\n", alert.StartsAt.Add(8*time.Hour).Format("2006-01-02 15:04:05")))
+			recoverbuffer.WriteString(fmt.Sprintf("项目: 告警主题: %s \n", alert.Annotations["summary"]))
 
-	for _, alert := range notification.Alerts {
-		newbuffer.WriteString(fmt.Sprintf("==============Start============ \n"))
-		newbuffer.WriteString(fmt.Sprintf("项目: 告警程序：prometheus_alert_email \n"))
-		newbuffer.WriteString(fmt.Sprintf("项目: 告警级别: %s \n", alert.Labels["severity"]))
-		newbuffer.WriteString(fmt.Sprintf("项目: 告警类型: %s \n",alert.Labels["alertname"]))
-		newbuffer.WriteString(fmt.Sprintf("项目: 故障主机: %s \n",alert.Labels["instance"]))
-		newbuffer.WriteString(fmt.Sprintf("项目: 告警主题: %s \n",alert.Annotations["summary"]))
-		newbuffer.WriteString(fmt.Sprintf("项目: 告警详情: %s \n",alert.Annotations["description"]))
-		newbuffer.WriteString(fmt.Sprintf(" **项目: 开始时间:**%s\n\n", alert.StartsAt.Add(8*time.Hour).Format("2006-01-02 15:04:05")))
-                newbuffer.WriteString(fmt.Sprintf("==============End============ \n"))
+		}
+
+	}else {
+		for _, alert := range notification.Alerts {
+			newbuffer.WriteString(fmt.Sprintf("==============Start============ \n"))
+			newbuffer.WriteString(fmt.Sprintf("项目: 告警程序：prometheus_alert_email \n"))
+			newbuffer.WriteString(fmt.Sprintf("项目: 告警级别: %s \n", alert.Labels["severity"]))
+			newbuffer.WriteString(fmt.Sprintf("项目: 告警类型: %s \n", alert.Labels["alertname"]))
+			newbuffer.WriteString(fmt.Sprintf("项目: 故障主机: %s \n", alert.Labels["instance"]))
+			newbuffer.WriteString(fmt.Sprintf("项目: 告警主题: %s \n", alert.Annotations["summary"]))
+			newbuffer.WriteString(fmt.Sprintf("项目: 告警详情: %s \n", alert.Annotations["description"]))
+			newbuffer.WriteString(fmt.Sprintf(" **项目: 开始时间:**%s\n\n", alert.StartsAt.Add(8*time.Hour).Format("2006-01-02 15:04:05")))
+			newbuffer.WriteString(fmt.Sprintf("==============End============ \n"))
+		}
 	}
 
 
 
+
+
 	if notification.Status == "resolved"{
-		m.Text.Content = newbuffer.String()
+		m.Text.Content = recoverbuffer.String()
 	}else {
 		m.Text.Content = newbuffer.String()
 	}
@@ -138,7 +151,8 @@ func SendAlertDingMsg(msg string) {
 		}
 	}()
 
-
+		token := os.Getenv("token")
+		webHook_Alert := "https://oapi.dingtalk.com/robot/send?access_token=" + token
 	fmt.Println("开始发送报警消息!!!")
 	fmt.Println(webHook_Alert)
 	//content := `{"msgtype": "text",
@@ -187,7 +201,7 @@ func main()  {
 	t := gin.Default()
 	t.POST("/Alert",AlertInfo)
 	t.GET("/",func(c *gin.Context){
-		c.String(http.StatusOK,"关于alertmanager实现钉钉报警的方法!!!!")
+		c.String(http.StatusOK,"关于alertmanager实现钉钉报警的方法v6！！！/n新增了报警恢复机制！！！")
 	})
 	t.Run(":8088")
 }
