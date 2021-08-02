@@ -1,4 +1,8 @@
 # 钉钉报警插件已打包在镜像，不想麻烦的可以直接pull
+## 其他两个平台实时同步
+* 个人Blog：https://alexcld.com
+* CSDN：https://blog.csdn.net/weixin_45509582
+
 加密token
 ```
 echo -n 'token' | base64
