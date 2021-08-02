@@ -26,14 +26,14 @@ source /etc/profile
 ## 运行程序并打包
 创建工作空间
 ```
-mkdir $HOME/go
+mkdir /work/go
 ```
 将工作空间路径声明到变量
 ```
 # 编辑 ~/.bash_profile 文件
 vim ~/.bash_profile
-# 在最后一行添加下面这句。$HOME/go 为你工作空间的路径，你也可以换成你喜欢的路径
-export GOPATH=$HOME/go
+# 在最后一行添加下面这句。/work/go 为你工作空间的路径，你也可以换成你喜欢的路径
+export GOPATH=/work/go
 # 保存退出后source一下
 source ~/.bash_profile
 ```
