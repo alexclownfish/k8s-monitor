@@ -35,7 +35,7 @@ spec:
     spec:
       containers:
         - name: alertgo
-          image: alexcld/alertgo:v3
+          image: alexcld/alertgo:v4
           env:
           - name: token
             valueFrom:
