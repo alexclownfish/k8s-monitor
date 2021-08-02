@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: alertgo
+  namespace: ops
+spec:
+  selector:
+    matchLabels:
+      app: alertgo
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: alertgo
+    spec:
+      containers:
+        - name: alertgo
+          image: alexcld/alertgo:v3
+          env:
+          - name: token
+            value: 7d11b4c9b5018abf0b7dbf10d6aeb41edb7db566630cd3c8e854678e86b1cfe8
+          ports:
+            - containerPort: 8088
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 8088
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            successThreshold: 1
+            failureThreshold: 3
+            timeoutSeconds: 1
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 8088
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            successThreshold: 1
+            failureThreshold: 3
+            timeoutSeconds: 1
+          lifecycle:
+            preStop:
+              exec:
+                command: ["/bin/bash","-c","sleep 20"]
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: alertgo
+  namespace: ops
+spec:
+  selector:
+    app: alertgo
+  ports:
+    - port: 80
+      targetPort: 8088
