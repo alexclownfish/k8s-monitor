@@ -18,7 +18,7 @@ spec:
           image: alexcld/alertgo:v3
           env:
           - name: token
-            value: 7d11b4c9b5018abf0b7dbf10d6aeb41edb7db566630cd3c8e854678e86b1cfe8
+            value: "你的token"
           ports:
             - containerPort: 8088
           livenessProbe:
