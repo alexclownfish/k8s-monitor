@@ -1,3 +1,75 @@
+# 钉钉报警插件已打包在镜像，不想麻烦的可以直接pull
+alertGo-deployment.yaml
+```
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: alertgo
+  namespace: ops
+spec:
+  selector:
+    matchLabels:
+      app: alertgo
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: alertgo
+    spec:
+      containers:
+        - name: alertgo
+          image: alexcld/alertgo:v3
+          env:
+          - name: token
+            value: "你的token"
+          ports:
+            - containerPort: 8088
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 8088
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            successThreshold: 1
+            failureThreshold: 3
+            timeoutSeconds: 1
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 8088
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            successThreshold: 1
+            failureThreshold: 3
+            timeoutSeconds: 1
+          lifecycle:
+            preStop:
+              exec:
+                command: ["/bin/bash","-c","sleep 20"]
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: alertgo
+  namespace: ops
+spec:
+  selector:
+    app: alertgo
+  ports:
+    - port: 80
+      targetPort: 8088
+```
+kubectl apply -f alertGo-deployment.yaml
+## 修改alertmanager-configmap.yaml
+![在这里插入图片描述](https://img-blog.csdnimg.cn/a516c430f9564610aae3e311fb999fd0.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80NTUwOTU4Mg==,size_16,color_FFFFFF,t_70)
+
+```
+webhook_configs:
+      - url: 'http://clusterIP/Alert'
+        send_resolved: true
+```
+至此完成
+
 # go环境部署及打包钉钉报警插件
 ## 其他两个平台实时同步
 * 个人Blog：https://alexcld.com
