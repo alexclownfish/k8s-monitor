@@ -2,51 +2,54 @@
 ## 其他两个平台实时同步
 * 个人Blog：https://alexcld.com
 * CSDN：https://blog.csdn.net/weixin_45509582
-## linux安装go1.11.5
+## linux安装go1.13.10
 
 下载解压
 ```
-mkdir ~/go && cd ~/go
-wget https://dl.google.com/go/go1.11.5.linux-amd64.tar.gz
+cd /opt && wget https://golang.org/dl/go1.13.10.linux-amd64.tar.gz
 #解压至/usr/local
-tar -C /usr/local -zxvf  go1.11.5.linux-amd64.tar.gz
+tar -zxvf go1.13.10.linux-amd64.tar.gz
 ```
-添加/usr/loacl/go/bin目录到PATH变量中。添加到/etc/profile 或$HOME/.profile都可以
+创建/opt/gocode/{src,bin,pkg}，用于设置GOPATH为/opt/gocode
 ```
-# 习惯用vim，没有的话可以用命令`sudo apt-get install vim`安装一个
-vim /etc/profile
-# 在最后一行添加
-export GOROOT=/usr/local/go
-export PATH=$PATH:$GOROOT/bin
+mkdir -p /opt/gocode/{src,bin,pkg}
+
+/opt/gocode/
+├── bin
+├── pkg
+└── src
+```
+修改/etc/profile系统环境变量文件，写入GOPATH信息以及go sdk路径
+```
+export GOROOT=/opt/go           #Golang源代码目录，安装目录
+export GOPATH=/opt/gocode        #Golang项目代码目录
+export PATH=$GOROOT/bin:$PATH    #Linux环境变量
+export GOBIN=$GOPATH/bin        #go install后生成的可执行命令存放路径
 # 保存退出后source一下
 source /etc/profile
 ```
 执行go version
-![在这里插入图片描述](https://img-blog.csdnimg.cn/0ee550e1c0b14ea99b4f4433a0347855.png)
+```
+[root@localhost gocode]# go version
+go version go1.13.10 linux/amd64
+```
 ## 运行程序并打包
-创建工作空间
+### 安装gin web框架
+爬过梯子的可以直接安装，不再赘述如何爬梯子，如果没有爬梯子的话 需要设置下GOPROXY
 ```
-mkdir /work/go
-```
-将工作空间路径声明到变量
-```
-# 编辑 ~/.bash_profile 文件
-vim ~/.bash_profile
-# 在最后一行添加下面这句。/work/go 为你工作空间的路径，你也可以换成你喜欢的路径
-export GOPATH=/work/go
-# 保存退出后source一下
-source ~/.bash_profile
-```
-我这里已经爬过梯子，如果没有爬梯子的话 需要设置下GOPROXY
-```
-###go版本不一样,可能命令也有所不一样
-export GOPROXY=https://goproxy.cn,direct
-或者
+golang 1.13 可以直接执行：
+
+七牛云
+go env -w GO111MODULE=on
 go env -w GOPROXY=https://goproxy.cn,direct
+
+阿里云
+go env -w GO111MODULE=on
+go env -w GOPROXY=https://mirrors.aliyun.com/goproxy/,direct
 ```
 安装gin依赖
 ```
-go get github.com/gin-gonic/gin
+go get -u github.com/gin-gonic/gin
 ```
 创建go文件
 ```
