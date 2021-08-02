@@ -53,7 +53,7 @@ go get -u github.com/gin-gonic/gin
 ```
 创建go文件
 ```
-mkdir -p $GOPATH/src/alertgo && cd $GOPATH/src/alertgo
+mkdir -p $GOPATH/alertgo && cd $GOPATH/alertgo
 touch alertGo.go
 ```
 ```
