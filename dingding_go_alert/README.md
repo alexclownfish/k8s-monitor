@@ -1,6 +1,15 @@
 # 钉钉报警插件已打包在镜像，不想麻烦的可以直接pull
 alertGo-deployment.yaml
 ```
+apiVersion: v1
+kind: Secret
+metadata:
+  name: dd-token
+  namespace: ops
+type: Opaque
+data:
+  token: '加密后的token'
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -21,7 +30,10 @@ spec:
           image: alexcld/alertgo:v3
           env:
           - name: token
-            value: "你的token"
+            valueFrom:
+              secretKeyRef:
+                name: dd-token
+                key: token
           ports:
             - containerPort: 8088
           livenessProbe:
@@ -58,6 +70,7 @@ spec:
   ports:
     - port: 80
       targetPort: 8088
+
 ```
 kubectl apply -f alertGo-deployment.yaml
 ## 修改alertmanager-configmap.yaml
