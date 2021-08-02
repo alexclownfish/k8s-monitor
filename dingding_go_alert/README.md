@@ -1,4 +1,8 @@
 # 钉钉报警插件已打包在镜像，不想麻烦的可以直接pull
+加密token
+```
+echo -n 'token' | base64
+```
 alertGo-deployment.yaml
 ```
 apiVersion: v1
