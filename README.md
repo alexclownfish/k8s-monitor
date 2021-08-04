@@ -711,6 +711,48 @@ data:
         annotations:
           summary: "命名空间: {{ $labels.namespace }} | Pod名称: {{ $labels.pod }} Pod状态Pending (当前值: {{ $value }})"
 
+
+      - alert: PodErrImagePull
+        expr: |
+           sum by(namespace,pod) (kube_pod_container_status_waiting_reason{reason="ErrImagePull"}) == 1
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          summary: "命名空间: {{ $labels.namespace }} | Pod名称: {{ $labels.pod }}  Pod状态ErrImagePull (当前值: {{ $value }})"
+      - alert: PodImagePullBackOff
+        expr: |
+           sum by(namespace,pod) (kube_pod_container_status_waiting_reason{reason="ImagePullBackOff"}) == 1
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          summary: "命名空间: {{ $labels.namespace }} | Pod名称: {{ $labels.pod }}  Pod状态ImagePullBackOff (当前值: {{ $value }})"
+      - alert: PodCrashLoopBackOff
+        expr: |
+           sum by(namespace,pod) (kube_pod_container_status_waiting_reason{reason="CrashLoopBackOff"}) == 1
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          summary: "命名空间: {{ $labels.namespace }} | Pod名称: {{ $labels.pod }}  Pod状态CrashLoopBackOff (当前值: {{ $value }})"
+      - alert: PodInvalidImageName
+        expr: |
+           sum by(namespace,pod) (kube_pod_container_status_waiting_reason{reason="InvalidImageName"}) == 1
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          summary: "命名空间: {{ $labels.namespace }} | Pod名称: {{ $labels.pod }}  Pod状态InvalidImageName (当前值: {{ $value }})"
+      - alert: PodCreateContainerConfigError
+        expr: |
+           sum by(namespace,pod) (kube_pod_container_status_waiting_reason{reason="CreateContainerConfigError"}) == 1
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          summary: "命名空间: {{ $labels.namespace }} | Pod名称: {{ $labels.pod }}  Pod状态CreateContainerConfigError (当前值: {{ $value }})"
+
   volume.rules: |
     groups:
     - name: volume.rules
