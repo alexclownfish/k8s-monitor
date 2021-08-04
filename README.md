@@ -711,6 +711,43 @@ data:
         annotations:
           summary: "命名空间: {{ $labels.namespace }} | Pod名称: {{ $labels.pod }} Pod状态Pending (当前值: {{ $value }})"
 
+  volume.rules: |
+    groups:
+    - name: volume.rules
+      rules:
+      - alert: PersistentVolumeClaimLost
+        expr: |
+           sum by(namespace, persistentvolumeclaim) (kube_persistentvolumeclaim_status_phase{phase="Lost"}) == 1
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "PersistentVolumeClaim {{ $labels.namespace }}/{{ $labels.persistentvolumeclaim }} is lost\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+      - alert: PersistentVolumeClaimPendig
+        expr: |
+           sum by(namespace, persistentvolumeclaim) (kube_persistentvolumeclaim_status_phase{phase="Pendig"}) == 1
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "PersistentVolumeClaim {{ $labels.namespace }}/{{ $labels.persistentvolumeclaim }} is pendig\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+      - alert: PersistentVolume Failed
+        expr: |
+           sum(kube_persistentvolume_status_phase{phase="Failed",job="kubernetes-service-endpoints"}) by (persistentvolume) == 1
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Persistent volume is failed state\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+      - alert: PersistentVolume Pending
+        expr: |
+           sum(kube_persistentvolume_status_phase{phase="Pending",job="kubernetes-service-endpoints"}) by (persistentvolume) == 1
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Persistent volume is pending state\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+
 ```
 #### node-exporter配置node-exporter.yaml(注意版本需要用1.0.1)
 ```
