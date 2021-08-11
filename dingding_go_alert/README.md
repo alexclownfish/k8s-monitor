@@ -335,7 +335,8 @@ curl -X POST http://10.1.229.17/-/reload
 ```
 
 然后触发报警，钉钉就可以正常收取了，
-![在这里插入图片描述](https://img-blog.csdnimg.cn/dfbbf2efe4b446c1bc71a20a54855180.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80NTUwOTU4Mg==,size_16,color_FFFFFF,t_70)
+
+![2fadc571a9f677760116ecb8ab051fd](https://user-images.githubusercontent.com/63449830/129005591-f95c6575-5df7-4ec4-8372-afca711f8b4b.png)
 
 
 在此感谢[大佬](https://blog.51cto.com/luoguoling)的代码
