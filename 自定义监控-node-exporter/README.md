@@ -11,6 +11,8 @@ mv node_exporter-0.18.1.linux-amd64/ node_exporter
 ```
 vim node_exporter    #查找9100，然后重启node_exporter
 ```
+![image](https://user-images.githubusercontent.com/63449830/131477090-1af86328-42db-4fe1-8046-19b88fea680f.png)
+
 将node_exporter设置为系统服务开机自启
 ```
 cat > /etc/systemd/system/node_exporter.service << "EOF"
