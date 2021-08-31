@@ -147,7 +147,7 @@ alertgo_status 0
 ```
 kill 11984
 ```
-再次查看key.prom，发现value为一
+再次查看key.prom，发现value为1
 ```
 [root@pro-zab-test3 key]# cat key.prom 
 node_exporter_status 0
