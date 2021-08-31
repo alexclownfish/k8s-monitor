@@ -1,0 +1,11 @@
+[Unit]
+Description=node_export
+Documentation=https://github.com/prometheus/node_exporter
+ 
+[Service]
+ExecStart=/usr/local/node_exporter/node_exporter
+ExecStart=
+ExecStart=/usr/local/node_exporter/node_exporter --collector.textfile.directory=/usr/local/node_exporter/key
+Restart=on-failure
+[Install]
+WantedBy=multi-user.target
