@@ -156,6 +156,7 @@ alertgo_status 1
 查看prometheus alerts
 ![1630393080(1)](https://user-images.githubusercontent.com/63449830/131457282-95826395-4ba1-4099-af1f-1ab3b950765d.jpg)
 钉钉已报警
+
 ![1630393114(1)](https://user-images.githubusercontent.com/63449830/131457342-d5bedbf5-f806-4c37-a142-976e5548ab30.jpg)
 
 # grafana部分后续更新 
