@@ -97,6 +97,12 @@ ExecStart=
 ExecStart=/usr/local/node_exporter/node_exporter --collector.textfile.directory=/usr/local/node_exporter/key
 ```
 到此就结束了，如果配置正确，重启一下node_exporter再次刷新页面可以看到
+根据服务的启停可以看到
+```
+[root@pro-zab-test3 key]# cat key.prom 
+node_exporter_status 0
+alertgo_status 0
+```
 
 ![image](https://user-images.githubusercontent.com/63449830/131454926-7867fc50-39dc-4400-8ff2-8ba50f53676c.png)
 ![image](https://user-images.githubusercontent.com/63449830/131454973-58e207b7-ed3e-4656-b0b4-10a8461fdec9.png)
@@ -106,3 +112,50 @@ ExecStart=/usr/local/node_exporter/node_exporter --collector.textfile.directory=
 ![image](https://user-images.githubusercontent.com/63449830/131455274-c1b0f06e-7e08-44d5-a704-d6ea5e1e63d0.png)
 ![image](https://user-images.githubusercontent.com/63449830/131455393-02746554-1623-4859-9431-1ec41eec78f1.png)
 
+## 模拟故障
+在prometheus-rules.yaml中添加rules规则，传统部署正常添加即可，我这里用k8s方式示例
+```
+linux-node.rules: |
+    groups:
+    - name: linux-node.rules
+      rules:
+      - alert: alertgoDone
+        expr: |
+           alertgo_status==1
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          summary: "{{ $labels.instance }}: alertgo is lost\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+```
+```
+ kubectl apply -f prometheus-rules.yaml 更新configmap配置文件到prometheus ，再热更新使配置文件生效 curl -X POST http://10.1.230.219:9090/-/reload 
+```
+我这里alertgo是go开发的二进制，我直接杀掉进程即可模拟
+查询进程号
+```
+[root@pro-zab-test3 key]# lsof -i:8088
+COMMAND     PID USER   FD   TYPE DEVICE SIZE/OFF NODE NAME
+alertGoV6 11984 root    3u  IPv6  89542      0t0  TCP *:radan-http (LISTEN)
+
+[root@pro-zab-test3 key]# cat key.prom 
+node_exporter_status 0
+alertgo_status 0
+
+```
+杀死进程
+```
+kill 11984
+```
+再次查看key.prom，发现value为一
+```
+[root@pro-zab-test3 key]# cat key.prom 
+node_exporter_status 0
+alertgo_status 1
+```
+查看prometheus alerts
+![1630393080(1)](https://user-images.githubusercontent.com/63449830/131457282-95826395-4ba1-4099-af1f-1ab3b950765d.jpg)
+钉钉已报警
+![1630393114(1)](https://user-images.githubusercontent.com/63449830/131457342-d5bedbf5-f806-4c37-a142-976e5548ab30.jpg)
+
+# grafana部分后续更新 
