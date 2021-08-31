@@ -7,6 +7,10 @@ tar -xvf node_exporter-*.linux-amd64.tar.gz -C /usr/local/
 
 mv node_exporter-0.18.1.linux-amd64/ node_exporter
 ```
+可以修改默认端口
+```
+vim node_exporter    #查找9100，然后重启node_exporter
+```
 将node_exporter设置为系统服务开机自启
 ```
 cat > /etc/systemd/system/node_exporter.service << "EOF"
