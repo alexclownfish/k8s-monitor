@@ -59,7 +59,7 @@ http://ip:9100/metrics访问
 ```
 ![image](https://user-images.githubusercontent.com/63449830/131453250-1c2f92f8-676b-4b9c-8517-cbe16d078f63.png)
 
-传统方式直接 systemctl restart prometheus重启即可
+传统方式直接重启prometheus即可
 k8s方式 kubectl apply -f prometheus-configmap.yaml 更新configmap配置文件到prometheus ，再热更新使配置文件生效 curl -X POST http://10.1.230.219:9090/-/reload 
 
 ## 在传统服务器上自定义node_exporter监控
@@ -99,7 +99,7 @@ vim /etc/crontab
 
 * * * * * root bash /usr/local/node_exporter/key/key.sh > /usr/local/node_exporter/key/key.prom
 ```
-由于新加了自定义监控配置项，所以需要把自定义配置项的保存目录告诉node_exporter，我们的node_exporter使用以系统服务来启动的，所以需要在node_exporter中加入以下内容,在部署上边prometheus中有提到
+由于新加了自定义监控配置项，所以需要把自定义配置项的保存目录告诉node_exporter，我们的node_exporter使用以系统服务来启动的，所以需要在node_exporter中加入以下内容,在部署上边node_exporter中有提到
 ```
 ExecStart=
 ExecStart=/usr/local/node_exporter/node_exporter --collector.textfile.directory=/usr/local/node_exporter/key
