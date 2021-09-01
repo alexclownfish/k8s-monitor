@@ -1,0 +1,61 @@
+模板：
+
+{{ $var := .externalURL}}{{ range $k,$v:=.alerts }}
+{{if eq $v.status "resolved"}}
+## [Prometheus恢复信息]({{$v.generatorURL}})
+#### [{{$v.labels.alertname}}]({{$var}})
+###### 告警级别：{{$v.labels.severity}}
+###### 开始时间：{{GetCSTtime $v.startsAt}}
+###### 结束时间：{{GetCSTtime $v.endsAt}}
+###### 故障主机IP：{{$v.labels.instance}}
+##### Annotations：{{$v.annotations.summary}}
+![Prometheus](https://raw.githubusercontent.com/feiyu563/PrometheusAlert/master/doc/alert-center.png)
+{{else}}
+## [Prometheus告警信息]({{$v.generatorURL}})
+#### [{{$v.labels.alertname}}]({{$var}})
+###### 告警级别：{{$v.labels.severity}}
+###### 开始时间：{{GetCSTtime $v.startsAt}}
+###### 结束时间：{{GetCSTtime $v.endsAt}}
+###### 故障主机IP：{{$v.labels.instance}}
+##### Annotations：{{$v.annotations.summary}}
+![Prometheus](https://raw.githubusercontent.com/feiyu563/PrometheusAlert/master/doc/alert-center.png)
+{{end}}
+{{ end }}
+
+
+json:
+
+{
+	"receiver": "default",
+	"status": "firing",
+	"alerts": [{
+		"status": "firing",
+		"labels": {
+			"alertname": "PodCrashLoopBackOff",
+			"namespace": "kube-system",
+			"pod": "metrics-server-75cc7dfdd-5hmxv",
+			"severity": "warning"
+		},
+		"annotations": {
+			"summary": "命名空间: kube-system | Pod名称: metrics-server-75cc7dfdd-5hmxv  Pod状态CrashLoopBackOff (当前值: 1)"
+		},
+		"startsAt": "2021-08-17T01:42:13.167936072Z",
+		"endsAt": "2021-08-17T01:46:13.167936072Z",
+		"generatorURL": "http://prometheus-7c698cfc7b-cgwkf:9090/graph?g0.expr=sum+by%28namespace%2C+pod%29+%28kube_pod_container_status_waiting_reason%7Breason%3D%22CrashLoopBackOff%22%7D%29+%3D%3D+1&g0.tab=1"
+	}],
+	"groupLabels": {
+		"alertname": "PodCrashLoopBackOff"
+	},
+	"commonLabels": {
+		"alertname": "PodCrashLoopBackOff",
+		"namespace": "kube-system",
+		"pod": "metrics-server-75cc7dfdd-5hmxv",
+		"severity": "warning"
+	},
+	"commonAnnotations": {
+		"summary": "命名空间: kube-system | Pod名称: metrics-server-75cc7dfdd-5hmxv  Pod状态CrashLoopBackOff (当前值: 1)"
+	},
+	"externalURL": "",
+	"version": "4",
+	"groupKey": "{}:{alertname=\"PodCrashLoopBackOff\"}"
+}
