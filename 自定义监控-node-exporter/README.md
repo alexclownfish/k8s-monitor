@@ -51,9 +51,11 @@ http://ip:9100/metrics访问
 
 进行添加 | 修改
 ```
- - job_name: 'linux-node-cluster'
-    static_configs:
-    - targets: ['172.20.32.218:9109']   #node_exporter主机
+    - job_name: linux-node
+      static_configs:
+      - targets:
+        - 172.22.254.87:9100   #node_exporter主机
+        - 172.22.254.86:9100   #node_exporter主机
 ```
 ![image](https://user-images.githubusercontent.com/63449830/131453250-1c2f92f8-676b-4b9c-8517-cbe16d078f63.png)
 
