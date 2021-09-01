@@ -168,3 +168,7 @@ alertgo_status 1
 ![1630393114(1)](https://user-images.githubusercontent.com/63449830/131457342-d5bedbf5-f806-4c37-a142-976e5548ab30.jpg)
 
 # grafana部分后续更新 
+![1630466573](https://user-images.githubusercontent.com/63449830/131606618-3ce8813b-b25c-43f2-8cff-f5b13cfda4ce.jpg)
+
+![1630466575(1)](https://user-images.githubusercontent.com/63449830/131606624-71149d88-455d-466d-9f66-174461770359.jpg)
+
