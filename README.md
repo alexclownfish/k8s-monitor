@@ -1,6 +1,6 @@
 # prometheus+grafana+alertmanager监控k8s无坑版
 ## 其他两个平台实时同步
-* 个人Blog：https://alexcld.com
+* 个人Blog：https://blog.alexcld.com https://vue.alexcld.com
 * CSDN：https://blog.csdn.net/weixin_45509582
 ## 摘要
 k8s搭建完成并正常使用的基础上，需要有一个动态存储。
