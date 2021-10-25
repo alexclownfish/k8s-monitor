@@ -1,0 +1,14 @@
+    - job_name: 'federate-dev'
+      scrape_interval: 30s
+      honor_labels: true
+      metrics_path: '/federate'
+      params:
+        'match[]':
+          - '{job=~".*"}'
+      static_configs:
+        - targets: ['172.22.254.87:30089']
+          labels:
+            k8scluster: test-k8s
+        - targets: ['172.22.254.106:32117']
+          labels:
+            k8scluster: test1-k8s
