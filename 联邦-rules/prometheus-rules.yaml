@@ -9,7 +9,7 @@ data:
     - name: general.rules
       rules:
       - alert: InstanceDown
-        expr: up{k8scluster!="test1-k8s",k8scluster!="test-k8s"} == 0
+        expr: up{k8scluster!~".+"} == 0
         for: 1m
         labels:
           severity: emergency
@@ -23,7 +23,7 @@ data:
       rules:
       - alert: NodeFilesystemUsage-warning
         expr: |
-          100 - (node_filesystem_free_bytes{k8scluster!="test1-k8s",k8scluster!="test-k8s"}) / node_filesystem_size_bytes * 100 > 65
+          100 - (node_filesystem_free_bytes{k8scluster!~".+"}) / node_filesystem_size_bytes * 100 > 75
         for: 1m
         labels:
           severity: warning 
@@ -34,7 +34,7 @@ data:
 
       - alert: NodeFilesystemUsage-critical
         expr: |
-          100 - (node_filesystem_free_bytes{k8scluster!="test1-k8s",k8scluster!="test-k8s"}) / node_filesystem_size_bytes * 100 > 75
+          100 - (node_filesystem_free_bytes{k8scluster!~".+"}) / node_filesystem_size_bytes * 100 > 85
         for: 1m
         labels:
           severity: critical
@@ -45,7 +45,7 @@ data:
 
       - alert: NodeFilesystemUsage-emergency
         expr: |
-          100 - (node_filesystem_free_bytes{k8scluster!="test1-k8s",k8scluster!="test-k8s"}) / node_filesystem_size_bytes * 100 > 85
+          100 - (node_filesystem_free_bytes{k8scluster!~".+"}) / node_filesystem_size_bytes * 100 > 95
         for: 1m
         labels:
           severity: emergency
@@ -56,7 +56,7 @@ data:
 
       - alert: NodeMemoryUsage-warning
         expr: |
-          100 - (node_memory_MemFree_bytes{k8scluster!="test1-k8s",k8scluster!="test-k8s"}+node_memory_Cached_bytes+node_memory_Buffers_bytes) / node_memory_MemTotal_bytes * 100 > 65
+          100 - (node_memory_MemFree_bytes{k8scluster!~".+"}+node_memory_Cached_bytes+node_memory_Buffers_bytes) / node_memory_MemTotal_bytes * 100 > 65
         for: 1m
         labels:
           severity: warning
@@ -65,7 +65,7 @@ data:
 
       - alert: NodeMemoryUsage-critical
         expr: |
-          100 - (node_memory_MemFree_bytes{k8scluster!="test1-k8s",k8scluster!="test-k8s"}+node_memory_Cached_bytes+node_memory_Buffers_bytes) / node_memory_MemTotal_bytes * 100 > 75
+          100 - (node_memory_MemFree_bytes{k8scluster!~".+"}+node_memory_Cached_bytes+node_memory_Buffers_bytes) / node_memory_MemTotal_bytes * 100 > 75
         for: 1m
         labels:
           severity: critical
@@ -74,7 +74,7 @@ data:
       
       - alert: NodeMemoryUsage-emergency
         expr: |
-          100 - (node_memory_MemFree_bytes{k8scluster!="test1-k8s",k8scluster!="test-k8s"}+node_memory_Cached_bytes+node_memory_Buffers_bytes) / node_memory_MemTotal_bytes * 100 > 85
+          100 - (node_memory_MemFree_bytes{k8scluster!~".+"}+node_memory_Cached_bytes+node_memory_Buffers_bytes) / node_memory_MemTotal_bytes * 100 > 85
         for: 1m
         labels:
           severity: emergency
@@ -83,7 +83,7 @@ data:
 
       - alert: NodeCPUUsage-warning  
         expr: |
-          100 - (avg(irate(node_cpu_seconds_total{mode="idle",k8scluster!="test1-k8s",k8scluster!="test-k8s"}[5m])) by (instance) * 100) > 65
+          100 - (avg(irate(node_cpu_seconds_total{mode="idle",k8scluster!~".+"}[5m])) by (instance) * 100) > 65
         for: 1m
         labels:
           severity: warning
@@ -92,7 +92,7 @@ data:
 
       - alert: NodeCPUUsage-critical 
         expr: |
-          100 - (avg(irate(node_cpu_seconds_total{mode="idle",k8scluster!="test1-k8s",k8scluster!="test-k8s"}[5m])) by (instance) * 100) > 75
+          100 - (avg(irate(node_cpu_seconds_total{mode="idle",k8scluster!~".+"}[5m])) by (instance) * 100) > 75
         for: 1m
         labels:
           severity: critical
@@ -101,7 +101,7 @@ data:
 
       - alert: NodeCPUUsage-emergency  
         expr: |
-          100 - (avg(irate(node_cpu_seconds_total{mode="idle",k8scluster!="test1-k8s",k8scluster!="test-k8s"}[5m])) by (instance) * 100) > 85
+          100 - (avg(irate(node_cpu_seconds_total{mode="idle",k8scluster!~".+"}[5m])) by (instance) * 100) > 85
         for: 1m
         labels:
           severity: emergency
@@ -110,7 +110,7 @@ data:
 
       - alert: KubeNodeNotReady-emergency
         expr: |
-          kube_node_status_condition{condition="Ready",status="true",k8scluster!="test1-k8s",k8scluster!="test-k8s"} == 0
+          kube_node_status_condition{condition="Ready",status="true",k8scluster!~".+"} == 0
         for: 1m
         labels:
           severity: emergency
@@ -123,7 +123,7 @@ data:
       rules:
       - alert: PodCPUUsage-warning
         expr: |
-           sum by(pod, namespace) (rate(container_cpu_usage_seconds_total{image!="",k8scluster!="test1-k8s",k8scluster!="test-k8s"}[5m]) * 100) > 10
+           sum by(pod, namespace) (rate(container_cpu_usage_seconds_total{image!="",k8scluster!~".+"}[5m]) * 100) > 10
         for: 1m
         labels:
           severity: warning 
@@ -132,7 +132,7 @@ data:
 
       - alert: PodCPUUsage-critical
         expr: |
-           sum by(pod, namespace) (rate(container_cpu_usage_seconds_total{image!="",k8scluster!="test1-k8s",k8scluster!="test-k8s"}[5m]) * 100) > 15
+           sum by(pod, namespace) (rate(container_cpu_usage_seconds_total{image!="",k8scluster!~".+"}[5m]) * 100) > 15
         for: 1m
         labels:
           severity: critical 
@@ -141,7 +141,7 @@ data:
 
       - alert: PodCPUUsage-emergency
         expr: |
-           sum by(pod, namespace) (rate(container_cpu_usage_seconds_total{image!="",k8scluster!="test1-k8s",k8scluster!="test-k8s"}[5m]) * 100) > 20
+           sum by(pod, namespace) (rate(container_cpu_usage_seconds_total{image!="",k8scluster!~".+"}[5m]) * 100) > 20
         for: 1m
         labels:
           severity: emergency 
@@ -150,7 +150,7 @@ data:
 
       - alert: PodMemoryUsage-warning
         expr: |
-           sum(container_memory_rss{image!=""}) by(pod, namespace) / sum(container_spec_memory_limit_bytes{image!="",k8scluster!="test1-k8s",k8scluster!="test-k8s"}) by(pod, namespace) * 100 != +inf > 100
+           sum(container_memory_rss{image!=""}) by(pod, namespace) / sum(container_spec_memory_limit_bytes{image!="",k8scluster!~".+"}) by(pod, namespace) * 100 != +inf > 100
         for: 1m
         labels:
           severity: warning 
@@ -159,7 +159,7 @@ data:
 
       - alert: PodMemoryUsage-critical
         expr: |
-           sum(container_memory_rss{image!=""}) by(pod, namespace) / sum(container_spec_memory_limit_bytes{image!="",k8scluster!="test1-k8s",k8scluster!="test-k8s"}) by(pod, namespace) * 100 != +inf > 125
+           sum(container_memory_rss{image!=""}) by(pod, namespace) / sum(container_spec_memory_limit_bytes{image!="",k8scluster!~".+"}) by(pod, namespace) * 100 != +inf > 125
         for: 1m
         labels:
           severity: critical 
@@ -168,7 +168,7 @@ data:
 
       - alert: PodMemoryUsage-emergency
         expr: |
-           sum(container_memory_rss{image!=""}) by(pod, namespace) / sum(container_spec_memory_limit_bytes{image!="",k8scluster!="test1-k8s",k8scluster!="test-k8s"}) by(pod, namespace) * 100 != +inf > 150
+           sum(container_memory_rss{image!=""}) by(pod, namespace) / sum(container_spec_memory_limit_bytes{image!="",k8scluster!~".+"}) by(pod, namespace) * 100 != +inf > 150
         for: 1m
         labels:
           severity: emergency 
@@ -177,7 +177,7 @@ data:
 
       - alert: PodNetworkReceive-warning
         expr: |
-           sum(rate(container_network_receive_bytes_total{image!="",name=~"^k8s_.*",k8scluster!="test1-k8s",k8scluster!="test-k8s"}[5m]) /1000) by (pod,namespace) > 15000
+           sum(rate(container_network_receive_bytes_total{image!="",name=~"^k8s_.*",k8scluster!~".+"}[5m]) /1000) by (pod,namespace) > 15000
         for: 1m
         labels:
           severity: warning
@@ -186,7 +186,7 @@ data:
 
       - alert: PodNetworkReceive-critical
         expr: |
-           sum(rate(container_network_receive_bytes_total{image!="",name=~"^k8s_.*",k8scluster!="test1-k8s",k8scluster!="test-k8s"}[5m]) /1000) by (pod,namespace) > 25000
+           sum(rate(container_network_receive_bytes_total{image!="",name=~"^k8s_.*",k8scluster!~".+"}[5m]) /1000) by (pod,namespace) > 25000
         for: 1m
         labels:
           severity: critical
@@ -195,7 +195,7 @@ data:
 
       - alert: PodNetworkReceive-emergency
         expr: |
-           sum(rate(container_network_receive_bytes_total{image!="",name=~"^k8s_.*",k8scluster!="test1-k8s",k8scluster!="test-k8s"}[5m]) /1000) by (pod,namespace) > 35000
+           sum(rate(container_network_receive_bytes_total{image!="",name=~"^k8s_.*",k8scluster!~".+"}[5m]) /1000) by (pod,namespace) > 35000
         for: 1m
         labels:
           severity: emergency
@@ -204,7 +204,7 @@ data:
 
       - alert: PodNetworkTransmit-warning
         expr: | 
-           sum(rate(container_network_transmit_bytes_total{image!="",name=~"^k8s_.*",k8scluster!="test1-k8s",k8scluster!="test-k8s"}[5m]) /1000) by (pod,namespace) > 15000
+           sum(rate(container_network_transmit_bytes_total{image!="",name=~"^k8s_.*",k8scluster!~".+"}[5m]) /1000) by (pod,namespace) > 15000
         for: 1m
         labels:
           severity: warning 
@@ -213,7 +213,7 @@ data:
 
       - alert: PodNetworkTransmit-critical
         expr: | 
-           sum(rate(container_network_transmit_bytes_total{image!="",name=~"^k8s_.*",k8scluster!="test1-k8s",k8scluster!="test-k8s"}[5m]) /1000) by (pod,namespace) > 25000
+           sum(rate(container_network_transmit_bytes_total{image!="",name=~"^k8s_.*",k8scluster!~".+"}[5m]) /1000) by (pod,namespace) > 25000
         for: 1m
         labels:
           severity: critical 
@@ -222,7 +222,7 @@ data:
 
       - alert: PodNetworkTransmit-emergency
         expr: | 
-           sum(rate(container_network_transmit_bytes_total{image!="",name=~"^k8s_.*",k8scluster!="test1-k8s",k8scluster!="test-k8s"}[5m]) /1000) by (pod,namespace) > 35000
+           sum(rate(container_network_transmit_bytes_total{image!="",name=~"^k8s_.*",k8scluster!~".+"}[5m]) /1000) by (pod,namespace) > 35000
         for: 1m
         labels:
           severity: emergency
@@ -231,7 +231,7 @@ data:
 
       - alert: PodRestart
         expr: |
-           sum(changes(kube_pod_container_status_restarts_total{k8scluster!="test1-k8s",k8scluster!="test-k8s"}[1m])) by (pod,namespace) > 0
+           sum(changes(kube_pod_container_status_restarts_total{k8scluster!~".+"}[1m])) by (pod,namespace) > 0
         for: 1m
         labels:
           severity: warning 
@@ -240,7 +240,7 @@ data:
 
       - alert: PodFailed-emergency
         expr: |
-           sum(kube_pod_status_phase{phase="Failed",k8scluster!="test1-k8s",k8scluster!="test-k8s"}) by (pod,namespace) > 0
+           sum(kube_pod_status_phase{phase="Failed",k8scluster!~".+"}) by (pod,namespace) > 0
         for: 5s
         labels:
           severity: emergency 
@@ -249,7 +249,7 @@ data:
 
       - alert: PodPending-emergency
         expr: | 
-           sum(kube_pod_status_phase{phase="Pending",k8scluster!="test1-k8s",k8scluster!="test-k8s"}) by (pod,namespace) == 1
+           sum(kube_pod_status_phase{phase="Pending",k8scluster!~".+"}) by (pod,namespace) == 1
         for: 1m
         labels:
           severity: emergency
@@ -258,7 +258,7 @@ data:
  
       - alert: PodErrImagePull-warning
         expr: |
-           sum by(namespace,pod) (kube_pod_container_status_waiting_reason{reason="ErrImagePull",k8scluster!="test1-k8s",k8scluster!="test-k8s"}) == 1
+           sum by(namespace,pod) (kube_pod_container_status_waiting_reason{reason="ErrImagePull",k8scluster!~".+"}) == 1
         for: 1m
         labels:
           severity: warning
@@ -267,7 +267,7 @@ data:
       
       - alert: ImagePullBackOff
         expr: |
-           sum by(namespace,pod) (kube_pod_container_status_waiting_reason{reason="ImagePullBackOff",k8scluster!="test1-k8s",k8scluster!="test-k8s"}) == 1
+           sum by(namespace,pod) (kube_pod_container_status_waiting_reason{reason="ImagePullBackOff",k8scluster!~".+"}) == 1
         for: 1m
         labels:
           severity: warning
@@ -276,7 +276,7 @@ data:
 
       - alert: PodCrashLoopBackOff
         expr: |
-           sum by(namespace,pod) (kube_pod_container_status_waiting_reason{reason="CrashLoopBackOff",k8scluster!="test1-k8s",k8scluster!="test-k8s"}) == 1
+           sum by(namespace,pod) (kube_pod_container_status_waiting_reason{reason="CrashLoopBackOff",k8scluster!~".+"}) == 1
         for: 1m
         labels:
           severity: warning
@@ -285,7 +285,7 @@ data:
 
       - alert: PodInvalidImageName
         expr: |
-           sum by(namespace,pod) (kube_pod_container_status_waiting_reason{reason="InvalidImageName",k8scluster!="test1-k8s",k8scluster!="test-k8s"}) == 1
+           sum by(namespace,pod) (kube_pod_container_status_waiting_reason{reason="InvalidImageName",k8scluster!~".+"}) == 1
         for: 1m
         labels:
           severity: warning
@@ -294,7 +294,7 @@ data:
 
       - alert: PodCreateContainerConfigError
         expr: |
-           sum by(namespace,pod) (kube_pod_container_status_waiting_reason{reason="CreateContainerConfigError",k8scluster!="test1-k8s",k8scluster!="test-k8s"}) == 1
+           sum by(namespace,pod) (kube_pod_container_status_waiting_reason{reason="CreateContainerConfigError",k8scluster!~".+"}) == 1
         for: 1m
         labels:
           severity: warning
@@ -309,7 +309,7 @@ data:
       rules:
       - alert: PersistentVolumeClaimLost
         expr: |
-           sum by(namespace, persistentvolumeclaim) (kube_persistentvolumeclaim_status_phase{phase="Lost",k8scluster!="test1-k8s",k8scluster!="test-k8s"}) == 1
+           sum by(namespace, persistentvolumeclaim) (kube_persistentvolumeclaim_status_phase{phase="Lost",k8scluster!~".+"}) == 1
         for: 1m
         labels:
           severity: warning
@@ -318,7 +318,7 @@ data:
       
       - alert: PersistentVolumeClaimPendig
         expr: |
-           sum by(namespace, persistentvolumeclaim) (kube_persistentvolumeclaim_status_phase{phase="Pendig",k8scluster!="test1-k8s",k8scluster!="test-k8s"}) == 1
+           sum by(namespace, persistentvolumeclaim) (kube_persistentvolumeclaim_status_phase{phase="Pendig",k8scluster!~".+"}) == 1
         for: 1m
         labels:
           severity: warning
@@ -327,7 +327,7 @@ data:
 
       - alert: PersistentVolume Failed
         expr: |
-           sum(kube_persistentvolume_status_phase{phase="Failed",job="kubernetes-service-endpoints",k8scluster!="test1-k8s",k8scluster!="test-k8s"}) by (persistentvolume) == 1
+           sum(kube_persistentvolume_status_phase{phase="Failed",job="kubernetes-service-endpoints",k8scluster!~".+"}) by (persistentvolume) == 1
         for: 1m
         labels:
           severity: warning
@@ -336,7 +336,7 @@ data:
  
       - alert: PersistentVolume Pending
         expr: |
-           sum(kube_persistentvolume_status_phase{phase="Pending",job="kubernetes-service-endpoints",k8scluster!="test1-k8s",k8scluster!="test-k8s"}) by (persistentvolume) == 1
+           sum(kube_persistentvolume_status_phase{phase="Pending",job="kubernetes-service-endpoints",k8scluster!~".+"}) by (persistentvolume) == 1
         for: 1m
         labels:
           severity: warning
@@ -361,7 +361,7 @@ data:
     - name: general.rules
       rules:
       - alert: InstanceDown
-        expr: up{k8scluster="test1-k8s"} == 0
+        expr: sum(up{k8scluster="test1-k8s"} == 0) by (k8scluster,instance,job)
         for: 1m
         labels:
           severity: emergency
@@ -375,7 +375,7 @@ data:
       rules:
       - alert: NodeFilesystemUsage-warning
         expr: |
-          100 - (node_filesystem_free_bytes{k8scluster="test1-k8s"}) / (node_filesystem_size_bytes{k8scluster="test1-k8s"}) * 100 > 100
+          sum(100 - (node_filesystem_free_bytes{k8scluster="test1-k8s"}) / (node_filesystem_size_bytes{k8scluster="test1-k8s"}) * 100 > 100) by (k8scluster,instance,mountpoint)
         for: 1m
         labels:
           severity: warning 
@@ -386,7 +386,7 @@ data:
 
       - alert: NodeFilesystemUsage-critical
         expr: |
-          100 - (node_filesystem_free_bytes{k8scluster="test1-k8s"}) / (node_filesystem_size_bytes{k8scluster="test1-k8s"}) * 100 > 125
+          sum(100 - (node_filesystem_free_bytes{k8scluster="test1-k8s"}) / (node_filesystem_size_bytes{k8scluster="test1-k8s"}) * 100 > 125) by (k8scluster,instance,mountpoint)
         for: 1m
         labels:
           severity: critical
@@ -397,7 +397,7 @@ data:
 
       - alert: NodeFilesystemUsage-emergency
         expr: |
-          100 - (node_filesystem_free_bytes{k8scluster="test1-k8s"}) / (node_filesystem_size_bytes{k8scluster="test1-k8s"}) * 100 > 150
+          sum(100 - (node_filesystem_free_bytes{k8scluster="test1-k8s"}) / (node_filesystem_size_bytes{k8scluster="test1-k8s"}) * 100 > 150) by (k8scluster,instance,mountpoint)
         for: 1m
         labels:
           severity: emergency
@@ -408,7 +408,7 @@ data:
 
       - alert: NodeMemoryUsage-warning
         expr: |
-          100 - (node_memory_MemFree_bytes{k8scluster="test1-k8s"}+node_memory_Cached_bytes+node_memory_Buffers_bytes) / node_memory_MemTotal_bytes * 100 > 65
+          sum(100 - (node_memory_MemFree_bytes{k8scluster="test1-k8s"} + node_memory_Cached_bytes + node_memory_Buffers_bytes) / node_memory_MemTotal_bytes * 100 > 65) by (k8scluster,instance)
         for: 1m
         labels:
           severity: warning
@@ -417,7 +417,7 @@ data:
 
       - alert: NodeMemoryUsage-critical
         expr: |
-          100 - (node_memory_MemFree_bytes{k8scluster="test1-k8s"}+node_memory_Cached_bytes+node_memory_Buffers_bytes) / node_memory_MemTotal_bytes * 100 > 75
+          sum(100 - (node_memory_MemFree_bytes{k8scluster="test1-k8s"} + node_memory_Cached_bytes + node_memory_Buffers_bytes) / node_memory_MemTotal_bytes * 100 > 75) by (k8scluster,instance)
         for: 1m
         labels:
           severity: critical
@@ -426,7 +426,7 @@ data:
       
       - alert: NodeMemoryUsage-emergency
         expr: |
-          100 - (node_memory_MemFree_bytes{k8scluster="test1-k8s"}+node_memory_Cached_bytes+node_memory_Buffers_bytes) / node_memory_MemTotal_bytes * 100 > 85
+          sum(100 - (node_memory_MemFree_bytes{k8scluster="test1-k8s"} + node_memory_Cached_bytes + node_memory_Buffers_bytes) / node_memory_MemTotal_bytes * 100 > 85) by (k8scluster,instance)
         for: 1m
         labels:
           severity: emergency
@@ -435,7 +435,7 @@ data:
 
       - alert: NodeCPUUsage-warning  
         expr: |
-          100 - (avg(irate(node_cpu_seconds_total{mode="idle",k8scluster="test1-k8s"}[5m])) by (instance) * 100) > 65
+          100 - (avg(irate(node_cpu_seconds_total{mode="idle",k8scluster="test1-k8s"}[5m])) by (instance,k8scluster) * 100) > 65
         for: 1m
         labels:
           severity: warning
@@ -444,7 +444,7 @@ data:
 
       - alert: NodeCPUUsage-critical 
         expr: |
-          100 - (avg(irate(node_cpu_seconds_total{mode="idle",k8scluster="test1-k8s"}[5m])) by (instance) * 100) > 75
+          100 - (avg(irate(node_cpu_seconds_total{mode="idle",k8scluster="test1-k8s"}[5m])) by (instance,k8scluster) * 100) > 75
         for: 1m
         labels:
           severity: critical
@@ -453,7 +453,7 @@ data:
 
       - alert: NodeCPUUsage-emergency  
         expr: |
-          100 - (avg(irate(node_cpu_seconds_total{mode="idle",k8scluster="test1-k8s"}[5m])) by (instance) * 100) > 85
+          100 - (avg(irate(node_cpu_seconds_total{mode="idle",k8scluster="test1-k8s"}[5m])) by (instance,k8scluster) * 100) > 85
         for: 1m
         labels:
           severity: emergency
@@ -462,7 +462,7 @@ data:
 
       - alert: KubeNodeNotReady-emergency
         expr: |
-          kube_node_status_condition{condition="Ready",status="true",k8scluster="test1-k8s"} == 0
+          sum(kube_node_status_condition{condition="Ready",status="true",k8scluster="test1-k8s"} == 0) by (node,k8scluster,condition)
         for: 1m
         labels:
           severity: emergency
@@ -475,7 +475,7 @@ data:
       rules:
       - alert: PodCPUUsage-warning
         expr: |
-           sum by(pod, namespace) (rate(container_cpu_usage_seconds_total{image!="",k8scluster="test1-k8s"}[5m]) * 100) > 65
+           sum by(pod, namespace,k8scluster) (rate(container_cpu_usage_seconds_total{image!="",k8scluster="test1-k8s"}[5m]) * 100) > 65
         for: 1m
         labels:
           severity: warning 
@@ -484,7 +484,7 @@ data:
 
       - alert: PodCPUUsage-critical
         expr: |
-           sum by(pod, namespace) (rate(container_cpu_usage_seconds_total{image!="",k8scluster="test1-k8s"}[5m]) * 100) > 75
+           sum by(pod, namespace,k8scluster) (rate(container_cpu_usage_seconds_total{image!="",k8scluster="test1-k8s"}[5m]) * 100) > 75
         for: 1m
         labels:
           severity: critical 
@@ -493,7 +493,7 @@ data:
 
       - alert: PodCPUUsage-emergency
         expr: |
-           sum by(pod, namespace) (rate(container_cpu_usage_seconds_total{image!="",k8scluster="test1-k8s"}[5m]) * 100) > 85
+           sum by(pod, namespace,k8scluster) (rate(container_cpu_usage_seconds_total{image!="",k8scluster="test1-k8s"}[5m]) * 100) > 85
         for: 1m
         labels:
           severity: emergency 
@@ -502,7 +502,7 @@ data:
 
       - alert: PodMemoryUsage-warning
         expr: |
-           sum(container_memory_rss{image!=""}) by(pod, namespace) / sum(container_spec_memory_limit_bytes{image!="",k8scluster="test1-k8s"}) by(pod, namespace) * 100 != +inf > 100
+           sum(container_memory_rss{image!=""}) by(pod, namespace,k8scluster) / sum(container_spec_memory_limit_bytes{image!="",k8scluster="test1-k8s"}) by(pod, namespace,k8scluster) * 100 != +inf > 100
         for: 1m
         labels:
           severity: warning 
@@ -511,7 +511,7 @@ data:
 
       - alert: PodMemoryUsage-critical
         expr: |
-           sum(container_memory_rss{image!=""}) by(pod, namespace) / sum(container_spec_memory_limit_bytes{image!="",k8scluster="test1-k8s"}) by(pod, namespace) * 100 != +inf > 125
+           sum(container_memory_rss{image!=""}) by(pod, namespace,k8scluster) / sum(container_spec_memory_limit_bytes{image!="",k8scluster="test1-k8s"}) by(pod, namespace,k8scluster) * 100 != +inf > 125
         for: 1m
         labels:
           severity: critical 
@@ -520,7 +520,7 @@ data:
 
       - alert: PodMemoryUsage-emergency
         expr: |
-           sum(container_memory_rss{image!=""}) by(pod, namespace) / sum(container_spec_memory_limit_bytes{image!="",k8scluster="test1-k8s"}) by(pod, namespace) * 100 != +inf > 150
+           sum(container_memory_rss{image!=""}) by(pod,namespace,k8scluster) / sum(container_spec_memory_limit_bytes{image!="",k8scluster="test1-k8s"}) by(pod, namespace,k8scluster) * 100 != +inf > 150
         for: 1m
         labels:
           severity: emergency 
@@ -529,7 +529,7 @@ data:
 
       - alert: PodNetworkReceive-warning
         expr: |
-           sum(rate(container_network_receive_bytes_total{image!="",name=~"^k8s_.*",k8scluster="test1-k8s"}[5m]) /1000) by (pod,namespace) > 15000
+           sum(rate(container_network_receive_bytes_total{image!="",name=~"^k8s_.*",k8scluster="test1-k8s"}[5m]) /1000) by (pod,namespace,k8scluster) > 15000
         for: 1m
         labels:
           severity: warning
@@ -538,7 +538,7 @@ data:
 
       - alert: PodNetworkReceive-critical
         expr: |
-           sum(rate(container_network_receive_bytes_total{image!="",name=~"^k8s_.*",k8scluster="test1-k8s"}[5m]) /1000) by (pod,namespace) > 25000
+           sum(rate(container_network_receive_bytes_total{image!="",name=~"^k8s_.*",k8scluster="test1-k8s"}[5m]) /1000) by (pod,namespace,k8scluster) > 25000
         for: 1m
         labels:
           severity: critical
@@ -547,7 +547,7 @@ data:
 
       - alert: PodNetworkReceive-emergency
         expr: |
-           sum(rate(container_network_receive_bytes_total{image!="",name=~"^k8s_.*",k8scluster="test1-k8s"}[5m]) /1000) by (pod,namespace) > 35000
+           sum(rate(container_network_receive_bytes_total{image!="",name=~"^k8s_.*",k8scluster="test1-k8s"}[5m]) /1000) by (pod,namespace,k8scluster) > 35000
         for: 1m
         labels:
           severity: emergency
@@ -556,7 +556,7 @@ data:
 
       - alert: PodNetworkTransmit-warning
         expr: | 
-           sum(rate(container_network_transmit_bytes_total{image!="",name=~"^k8s_.*",k8scluster="test1-k8s"}[5m]) /1000) by (pod,namespace) > 15000
+           sum(rate(container_network_transmit_bytes_total{image!="",name=~"^k8s_.*",k8scluster="test1-k8s"}[5m]) /1000) by (pod,namespace,k8scluster) > 15000
         for: 1m
         labels:
           severity: warning 
@@ -565,7 +565,7 @@ data:
 
       - alert: PodNetworkTransmit-critical
         expr: | 
-           sum(rate(container_network_transmit_bytes_total{image!="",name=~"^k8s_.*",k8scluster="test1-k8s"}[5m]) /1000) by (pod,namespace) > 25000
+           sum(rate(container_network_transmit_bytes_total{image!="",name=~"^k8s_.*",k8scluster="test1-k8s"}[5m]) /1000) by (pod,namespace,k8scluster) > 25000
         for: 1m
         labels:
           severity: critical 
@@ -574,7 +574,7 @@ data:
 
       - alert: PodNetworkTransmit-emergency
         expr: | 
-           sum(rate(container_network_transmit_bytes_total{image!="",name=~"^k8s_.*",k8scluster="test1-k8s"}[5m]) /1000) by (pod,namespace) > 35000
+           sum(rate(container_network_transmit_bytes_total{image!="",name=~"^k8s_.*",k8scluster="test1-k8s"}[5m]) /1000) by (pod,namespace,k8scluster) > 35000
         for: 1m
         labels:
           severity: emergency
@@ -583,7 +583,7 @@ data:
 
       - alert: PodRestart
         expr: |
-           sum(changes(kube_pod_container_status_restarts_total{k8scluster="test1-k8s"}[1m])) by (pod,namespace) > 0
+           sum(changes(kube_pod_container_status_restarts_total{k8scluster="test1-k8s"}[1m])) by (pod,namespace,k8scluster) > 0
         for: 1m
         labels:
           severity: warning 
@@ -592,7 +592,7 @@ data:
 
       - alert: PodFailed-emergency
         expr: |
-           sum(kube_pod_status_phase{phase="Failed",k8scluster="test1-k8s"}) by (pod,namespace) > 0
+           sum(kube_pod_status_phase{phase="Failed",k8scluster="test1-k8s"}) by (pod,namespace,k8scluster) > 0
         for: 5s
         labels:
           severity: emergency 
@@ -601,7 +601,7 @@ data:
 
       - alert: PodPending-emergency
         expr: | 
-           sum(kube_pod_status_phase{phase="Pending",k8scluster="test1-k8s"}) by (pod,namespace) == 1
+           sum(kube_pod_status_phase{phase="Pending",k8scluster="test1-k8s"}) by (pod,namespace,k8scluster) == 1
         for: 1m
         labels:
           severity: emergency
@@ -610,7 +610,7 @@ data:
  
       - alert: PodErrImagePull-warning
         expr: |
-           sum by(namespace,pod) (kube_pod_container_status_waiting_reason{reason="ErrImagePull",k8scluster="test1-k8s"}) == 1
+           sum by(namespace,pod,k8scluster) (kube_pod_container_status_waiting_reason{reason="ErrImagePull",k8scluster="test1-k8s"}) == 1
         for: 1m
         labels:
           severity: warning
@@ -619,7 +619,7 @@ data:
       
       - alert: ImagePullBackOff
         expr: |
-           sum by(namespace,pod) (kube_pod_container_status_waiting_reason{reason="ImagePullBackOff",k8scluster="test1-k8s"}) == 1
+           sum by(namespace,pod,k8scluster) (kube_pod_container_status_waiting_reason{reason="ImagePullBackOff",k8scluster="test1-k8s"}) == 1
         for: 1m
         labels:
           severity: warning
@@ -628,7 +628,7 @@ data:
 
       - alert: PodCrashLoopBackOff
         expr: |
-           sum by(namespace,pod) (kube_pod_container_status_waiting_reason{reason="CrashLoopBackOff",k8scluster="test1-k8s"}) == 1
+           sum by(namespace,pod,k8scluster) (kube_pod_container_status_waiting_reason{reason="CrashLoopBackOff",k8scluster="test1-k8s"}) == 1
         for: 1m
         labels:
           severity: warning
@@ -637,7 +637,7 @@ data:
 
       - alert: PodInvalidImageName
         expr: |
-           sum by(namespace,pod) (kube_pod_container_status_waiting_reason{reason="InvalidImageName",k8scluster="test1-k8s"}) == 1
+           sum by(namespace,pod,k8scluster) (kube_pod_container_status_waiting_reason{reason="InvalidImageName",k8scluster="test1-k8s"}) == 1
         for: 1m
         labels:
           severity: warning
@@ -646,7 +646,7 @@ data:
 
       - alert: PodCreateContainerConfigError
         expr: |
-           sum by(namespace,pod) (kube_pod_container_status_waiting_reason{reason="CreateContainerConfigError",k8scluster="test1-k8s"}) == 1
+           sum by(namespace,pod,k8scluster) (kube_pod_container_status_waiting_reason{reason="CreateContainerConfigError",k8scluster="test1-k8s"}) == 1
         for: 1m
         labels:
           severity: warning
@@ -661,7 +661,7 @@ data:
       rules:
       - alert: PersistentVolumeClaimLost
         expr: |
-           sum by(namespace, persistentvolumeclaim) (kube_persistentvolumeclaim_status_phase{phase="Lost",k8scluster="test1-k8s"}) == 1
+           sum by(namespace, persistentvolumeclaim,k8scluster) (kube_persistentvolumeclaim_status_phase{phase="Lost",k8scluster="test1-k8s"}) == 1
         for: 1m
         labels:
           severity: warning
@@ -670,7 +670,7 @@ data:
       
       - alert: PersistentVolumeClaimPendig
         expr: |
-           sum by(namespace, persistentvolumeclaim) (kube_persistentvolumeclaim_status_phase{phase="Pendig",k8scluster="test1-k8s"}) == 1
+           sum by(namespace, persistentvolumeclaim,k8scluster) (kube_persistentvolumeclaim_status_phase{phase="Pendig",k8scluster="test1-k8s"}) == 1
         for: 1m
         labels:
           severity: warning
@@ -679,7 +679,7 @@ data:
 
       - alert: PersistentVolume Failed
         expr: |
-           sum(kube_persistentvolume_status_phase{phase="Failed",job="kubernetes-service-endpoints",k8scluster="test1-k8s"}) by (persistentvolume) == 1
+           sum(kube_persistentvolume_status_phase{phase="Failed",job="kubernetes-service-endpoints",k8scluster="test1-k8s"}) by (persistentvolume,k8scluster) == 1
         for: 1m
         labels:
           severity: warning
@@ -688,7 +688,7 @@ data:
  
       - alert: PersistentVolume Pending
         expr: |
-           sum(kube_persistentvolume_status_phase{phase="Pending",job="kubernetes-service-endpoints",k8scluster="test1-k8s"}) by (persistentvolume) == 1
+           sum(kube_persistentvolume_status_phase{phase="Pending",job="kubernetes-service-endpoints",k8scluster="test1-k8s"}) by (persistentvolume,k8scluster) == 1
         for: 1m
         labels:
           severity: warning
