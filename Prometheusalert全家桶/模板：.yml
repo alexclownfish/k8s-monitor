@@ -4,20 +4,21 @@
 {{if eq $v.status "resolved"}}
 ## [Prometheus恢复信息]({{$v.generatorURL}})
 #### [{{$v.labels.alertname}}]({{$var}})
-###### 告警级别：{{$v.labels.severity}}
-###### 开始时间：{{GetCSTtime $v.startsAt}}
-###### 结束时间：{{GetCSTtime $v.endsAt}}
-###### 故障主机IP：{{$v.labels.instance}}
-##### Annotations：{{$v.annotations.summary}}
+###### `告警集群：`{{$v.labels.k8scluster}}
+###### `告警级别：`{{$v.labels.severity}}
+###### `开始时间：`{{GetCSTtime $v.startsAt}}
+###### `结束时间：`{{GetCSTtime $v.endsAt}}
+###### `故障主机IP：`{{$v.labels.instance}}
+##### `Annotations：`{{$v.annotations.summary}}
 ![Prometheus](https://raw.githubusercontent.com/feiyu563/PrometheusAlert/master/doc/alert-center.png)
 {{else}}
 ## [Prometheus告警信息]({{$v.generatorURL}})
 #### [{{$v.labels.alertname}}]({{$var}})
-###### 告警级别：{{$v.labels.severity}}
-###### 开始时间：{{GetCSTtime $v.startsAt}}
-###### 结束时间：{{GetCSTtime $v.endsAt}}
-###### 故障主机IP：{{$v.labels.instance}}
-##### Annotations：{{$v.annotations.summary}}
+###### `告警集群：`{{$v.labels.k8scluster}}
+###### `告警级别：`{{$v.labels.severity}}
+###### `开始时间：`{{GetCSTtime $v.startsAt}}
+###### `故障主机IP：`{{$v.labels.instance}}
+##### `Annotations：`{{$v.annotations.summary}}
 ![Prometheus](https://raw.githubusercontent.com/feiyu563/PrometheusAlert/master/doc/alert-center.png)
 {{end}}
 {{ end }}
@@ -26,36 +27,40 @@
 json:
 
 {
-	"receiver": "default",
-	"status": "firing",
-	"alerts": [{
-		"status": "firing",
-		"labels": {
-			"alertname": "PodCrashLoopBackOff",
-			"namespace": "kube-system",
-			"pod": "metrics-server-75cc7dfdd-5hmxv",
-			"severity": "warning"
-		},
-		"annotations": {
-			"summary": "命名空间: kube-system | Pod名称: metrics-server-75cc7dfdd-5hmxv  Pod状态CrashLoopBackOff (当前值: 1)"
-		},
-		"startsAt": "2021-08-17T01:42:13.167936072Z",
-		"endsAt": "2021-08-17T01:46:13.167936072Z",
-		"generatorURL": "http://prometheus-7c698cfc7b-cgwkf:9090/graph?g0.expr=sum+by%28namespace%2C+pod%29+%28kube_pod_container_status_waiting_reason%7Breason%3D%22CrashLoopBackOff%22%7D%29+%3D%3D+1&g0.tab=1"
-	}],
-	"groupLabels": {
-		"alertname": "PodCrashLoopBackOff"
-	},
-	"commonLabels": {
-		"alertname": "PodCrashLoopBackOff",
-		"namespace": "kube-system",
-		"pod": "metrics-server-75cc7dfdd-5hmxv",
-		"severity": "warning"
-	},
-	"commonAnnotations": {
-		"summary": "命名空间: kube-system | Pod名称: metrics-server-75cc7dfdd-5hmxv  Pod状态CrashLoopBackOff (当前值: 1)"
-	},
-	"externalURL": "",
-	"version": "4",
-	"groupKey": "{}:{alertname=\"PodCrashLoopBackOff\"}"
+    "receiver": "default",
+    "status": "firing",
+    "alerts": [
+        {
+            "status": "firing",
+            "labels": {
+                "alertname": "PodCPUUsage-warning",
+                "k8scluster": "test1-k8s",
+                "namespace": "kubesphere-logging-system",
+                "pod": "elasticsearch-logging-data-0",
+                "severity": "warning"
+            },
+            "annotations": {
+                "summary": "命名空间: kubesphere-logging-system | Pod名称: elasticsearch-logging-data-0 CPU使用大于65% (当前值: 71.38808918954389)"
+            },
+            "startsAt": "2021-10-28T06:40:29.193Z",
+            "endsAt": "0001-01-01T00:00:00Z",
+            "generatorURL": "http://prometheus-5b9498dbc6-xb9kk:9090/graph?g0.expr=sum+by%28pod%2C+namespace%2C+k8scluster%29+%28rate%28container_cpu_usage_seconds_total%7Bimage%21%3D%22%22%2Ck8scluster%3D%22test1-k8s%22%7D%5B5m%5D%29+%2A+100%29+%3E+65\u0026g0.tab=1",
+            "fingerprint": "af81b1bfa25d1baf"
+        }
+    ],
+    "groupLabels": {},
+    "commonLabels": {
+        "alertname": "PodCPUUsage-warning",
+        "k8scluster": "test1-k8s",
+        "namespace": "kubesphere-logging-system",
+        "pod": "elasticsearch-logging-data-0",
+        "severity": "warning"
+    },
+    "commonAnnotations": {
+        "summary": "命名空间: kubesphere-logging-system | Pod名称: elasticsearch-logging-data-0 CPU使用大于65% (当前值: 71.38808918954389)"
+    },
+    "externalURL": "http://alertmanager.china.com",
+    "version": "4",
+    "groupKey": "{}:{}",
+    "truncatedAlerts": 0
 }
