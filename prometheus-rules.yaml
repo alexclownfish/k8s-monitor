@@ -210,4 +210,4 @@ data:
         labels:
           severity: warning
         annotations:
-          summary: "Persistent volume is pending state\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+          summary: "Persistent volume is pending state\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}" 
