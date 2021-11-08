@@ -4,20 +4,20 @@
 {{if eq $v.status "resolved"}}
 ## [Prometheus恢复信息]({{$v.generatorURL}})
 #### [{{$v.labels.alertname}}]({{$var}})
-###### `告警集群：`{{$v.labels.k8scluster}}
-###### `告警级别：`{{$v.labels.severity}}
-###### `开始时间：`{{GetCSTtime $v.startsAt}}
-###### `结束时间：`{{GetCSTtime $v.endsAt}}
-###### `故障主机IP：`{{$v.labels.instance}}
+###### <font color="#02b340">告警集群</font>：{{$v.labels.k8scluster}}
+###### <font color="#02b340">告警级别</font>：{{$v.labels.severity}}
+###### <font color="#02b340">开始时间</font>：{{GetCSTtime $v.startsAt}}
+###### <font color="#02b340">结束时间</font>：{{GetCSTtime $v.endsAt}}
+###### <font color="#02b340">故障主机IP</font>：{{$v.labels.instance}}
 ##### `Annotations：`{{$v.annotations.summary}}
 ![Prometheus](https://raw.githubusercontent.com/feiyu563/PrometheusAlert/master/doc/alert-center.png)
 {{else}}
 ## [Prometheus告警信息]({{$v.generatorURL}})
 #### [{{$v.labels.alertname}}]({{$var}})
-###### `告警集群：`{{$v.labels.k8scluster}}
-###### `告警级别：`{{$v.labels.severity}}
-###### `开始时间：`{{GetCSTtime $v.startsAt}}
-###### `故障主机IP：`{{$v.labels.instance}}
+###### <font color="#FF0000">告警集群</font>：{{$v.labels.k8scluster}}
+###### <font color="#FF0000">告警级别</font>：{{$v.labels.severity}}
+###### <font color="#FF0000">开始时间</font>：{{GetCSTtime $v.startsAt}}
+###### <font color="#FF0000">故障主机IP</font>：{{$v.labels.instance}}
 ##### `Annotations：`{{$v.annotations.summary}}
 ![Prometheus](https://raw.githubusercontent.com/feiyu563/PrometheusAlert/master/doc/alert-center.png)
 {{end}}
