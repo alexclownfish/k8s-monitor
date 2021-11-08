@@ -4,7 +4,7 @@ docker pull alexcld/alertgo:v5
 * 个人Blog：https://blog.alexcld.com https://vue.alexcld.com
 * CSDN：https://blog.csdn.net/weixin_45509582
 
-加密token
+加密token,token变量指的是顶顶机器人webhook所携带的token
 ```
 echo -n 'token' | base64
 ```
