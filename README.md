@@ -1178,8 +1178,12 @@ curl -X POST http://10.1.230.219:9090/-/reload
 ![在这里插入图片描述](https://img-blog.csdnimg.cn/img_convert/9bed866e7556554490febdfb84bf3769.png)
 ![在这里插入图片描述](https://img-blog.csdnimg.cn/img_convert/7a5776cc75bbd830ee989699467317c4.png)
 
+![image](https://user-images.githubusercontent.com/63449830/140845934-b34278e9-3a89-4ef7-a245-bd426e9a9ea7.png)
+![image](https://user-images.githubusercontent.com/63449830/140845943-5bf320bc-2727-4973-b175-481f0eea5792.png)
+
 看到已经触发报警并发送邮件
 至此结束
+
 ## 感谢大佬
 [https://blog.51cto.com/luoguoling](https://blog.51cto.com/luoguoling)
 [https://alexcld.com](https://alexcld.com)
