@@ -48,11 +48,11 @@ spec:
               readOnly: true
           resources:
             limits:
-              cpu: 10m
-              memory: 10Mi
+              cpu: 100m
+              memory: 100Mi
             requests:
-              cpu: 10m
-              memory: 10Mi
+              cpu: 100m
+              memory: 100Mi
 
         - name: prometheus-server
           image: "prom/prometheus:v2.30.3"
@@ -81,11 +81,11 @@ spec:
           # based on 10 running nodes with 30 pods each
           resources:
             limits:
-              cpu: 600m
+              cpu: 2000m
               memory: 20000Mi
             requests:
-              cpu: 300m
-              memory: 1500Mi
+              cpu: 1000m
+              memory: 10000Mi
 
           volumeMounts:
             - name: config-volume
@@ -109,9 +109,72 @@ spec:
   - metadata:
       name: prometheus-data
     spec:
-      storageClassName: managed-nfs-storage #存储类根据自己的存储类名字修改
+      storageClassName: nfs-storage #存储类根据自己的存储类名字修改
       accessModes:
-        - ReadWriteOnce
+        - ReadWriteMany
       resources:
         requests:
-          storage: "16Gi"
+          storage: "200Gi"
+---
+apiVersion: v1
+kind: Service
+metadata: 
+  name: prometheus
+  namespace: ops
+spec: 
+  type: NodePort
+  ports: 
+    - name: http 
+      port: 9090
+      protocol: TCP
+      targetPort: 9090
+      nodePort: 31198
+  selector: 
+    k8s-app: prometheus
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: prometheus
+  namespace: ops
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: prometheus
+rules:
+  - apiGroups:
+      - ""
+    resources:
+      - nodes
+      - nodes/metrics
+      - services
+      - endpoints
+      - pods
+    verbs:
+      - get
+      - list
+      - watch
+  - apiGroups:
+      - ""
+    resources:
+      - configmaps
+    verbs:
+      - get
+  - nonResourceURLs:
+      - "/metrics"
+    verbs:
+      - get
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: prometheus
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: prometheus
+subjects:
+- kind: ServiceAccount
+  name: prometheus
+  namespace: ops  
