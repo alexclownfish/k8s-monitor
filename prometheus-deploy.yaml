@@ -6,15 +6,34 @@ metadata:
   labels:
     k8s-app: prometheus
 spec:
-  replicas: 1
+  replicas: 2
   selector:
-    matchLabels:
+    matchLabels:                  ##下面匹配的是这里的标签
       k8s-app: prometheus
   template:
     metadata:
       labels:
         k8s-app: prometheus
     spec:
+      affinity:
+        podAntiAffinity:    ##pod反亲和
+          requiredDuringSchedulingIgnoredDuringExecution:   ##强制匹配，不满足就不调度
+            - topologyKey: 'kubernetes.io/hostname'         ##设置拓扑域为主机
+              labelSelector:                                ## 匹配标签 k8s-app 等于 prometheus
+                matchExpressions:
+                  - key: k8s-app
+                    operator: In
+                    values:
+                      - prometheus
+        nodeAffinity:     ##节点亲和，简单实用更建议自定义标签后使用nodeSelector字段
+          requiredDuringSchedulingIgnoredDuringExecution: ##强制匹配，不满足就不调度
+            nodeSelectorTerms:
+              - matchExpressions:                 ## 匹配主机名称 等于是 xxx1 或 xxx2
+                  - key: kubernetes.io/hostname
+                    operator: In
+                    values:
+                      - xxx1
+                      - xxx2
       serviceAccountName: prometheus
       initContainers:
       - name: "init-chown-data"
@@ -38,20 +57,13 @@ spec:
               readOnly: true
             - mountPath: /etc/localtime
               name: timezone
-          resources:
-            limits:
-              cpu: 10m
-              memory: 100Mi
-            requests:
-              cpu: 10m
-              memory: 100Mi
-
         - name: prometheus-server
-          image: "prom/prometheus:v2.20.0"
+          image: "prom/prometheus:v2.30.3"
           imagePullPolicy: "IfNotPresent"
           args:
             - --config.file=/etc/config/prometheus.yml
             - --storage.tsdb.path=/data
+            - --storage.tsdb.retention.time=1y
             - --web.console.libraries=/etc/prometheus/console_libraries
             - --web.console.templates=/etc/prometheus/consoles
             - --web.enable-lifecycle
@@ -69,14 +81,6 @@ spec:
               port: 9090
             initialDelaySeconds: 30
             timeoutSeconds: 30
-          resources:
-            limits:
-              cpu: 500m
-              memory: 800Mi
-            requests:
-              cpu: 200m
-              memory: 400Mi
-            
           volumeMounts:
             - name: config-volume
               mountPath: /etc/config
