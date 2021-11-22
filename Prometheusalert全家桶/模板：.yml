@@ -4,22 +4,22 @@
 {{if eq $v.status "resolved"}}
 ## [Prometheus恢复信息]({{$v.generatorURL}})
 #### [{{$v.labels.alertname}}]({{$var}})
-###### <font color="#02b340">告警集群</font>：{{$v.labels.k8scluster}}
+###### <font color="#02b340">告警集群</font>：{{$v.labels.cluster}}
 ###### <font color="#02b340">告警级别</font>：{{$v.labels.severity}}
 ###### <font color="#02b340">开始时间</font>：{{GetCSTtime $v.startsAt}}
 ###### <font color="#02b340">结束时间</font>：{{GetCSTtime $v.endsAt}}
 ###### <font color="#02b340">故障主机IP</font>：{{$v.labels.instance}}
 ##### `Annotations：`{{$v.annotations.summary}}
-![Prometheus](https://raw.githubusercontent.com/feiyu563/PrometheusAlert/master/doc/alert-center.png)
+![Prometheus](https://img.alexcld.com/img/prometheus-resolve.jpg)
 {{else}}
 ## [Prometheus告警信息]({{$v.generatorURL}})
 #### [{{$v.labels.alertname}}]({{$var}})
-###### <font color="#FF0000">告警集群</font>：{{$v.labels.k8scluster}}
+###### <font color="#FF0000">告警集群</font>：{{$v.labels.cluster}}
 ###### <font color="#FF0000">告警级别</font>：{{$v.labels.severity}}
 ###### <font color="#FF0000">开始时间</font>：{{GetCSTtime $v.startsAt}}
 ###### <font color="#FF0000">故障主机IP</font>：{{$v.labels.instance}}
 ##### `Annotations：`{{$v.annotations.summary}}
-![Prometheus](https://raw.githubusercontent.com/feiyu563/PrometheusAlert/master/doc/alert-center.png)
+![Prometheus](https://img.alexcld.com/img/prometheus-firing.jpg)
 {{end}}
 {{ end }}
 
@@ -33,31 +33,31 @@ json:
         {
             "status": "firing",
             "labels": {
-                "alertname": "PodCPUUsage-warning",
-                "k8scluster": "test1-k8s",
-                "namespace": "kubesphere-logging-system",
-                "pod": "elasticsearch-logging-data-0",
+                "alertname": "PodNetworkTransmit-warning",
+                "cluster": "k8s-xian-prod",
+                "namespace": "kube-system",
+                "pod": "everest-csi-driver-plnp7",
                 "severity": "warning"
             },
             "annotations": {
-                "summary": "命名空间: kubesphere-logging-system | Pod名称: elasticsearch-logging-data-0 CPU使用大于65% (当前值: 71.38808918954389)"
+                "summary": "命名空间: kube-system | Pod名称: everest-csi-driver-plnp7 出口流量大于15MB/s (当前值: 121.62786709096167/K/s)"
             },
-            "startsAt": "2021-10-28T06:40:29.193Z",
+            "startsAt": "2021-11-10T07:27:16.115Z",
             "endsAt": "0001-01-01T00:00:00Z",
-            "generatorURL": "http://prometheus-5b9498dbc6-xb9kk:9090/graph?g0.expr=sum+by%28pod%2C+namespace%2C+k8scluster%29+%28rate%28container_cpu_usage_seconds_total%7Bimage%21%3D%22%22%2Ck8scluster%3D%22test1-k8s%22%7D%5B5m%5D%29+%2A+100%29+%3E+65\u0026g0.tab=1",
-            "fingerprint": "af81b1bfa25d1baf"
+            "generatorURL": "http://prometheus-cf86d85d4-m8t84:9090/graph?g0.expr=sum+by%28pod%2C+namespace%2C+cluster%29+%28rate%28container_network_transmit_bytes_total%7Bcluster%3D%22k8s-xian-prod%22%2Cimage%21%3D%22%22%2Cname%3D~%22%5Ek8s_.%2A%22%7D%5B5m%5D%29+%2F+1000%29+%3E+100\u0026g0.tab=1",
+            "fingerprint": "fa7b651ca182c4a6"
         }
     ],
     "groupLabels": {},
     "commonLabels": {
-        "alertname": "PodCPUUsage-warning",
-        "k8scluster": "test1-k8s",
-        "namespace": "kubesphere-logging-system",
-        "pod": "elasticsearch-logging-data-0",
+        "alertname": "PodNetworkTransmit-warning",
+        "cluster": "k8s-xian-prod",
+        "namespace": "kube-system",
+        "pod": "everest-csi-driver-plnp7",
         "severity": "warning"
     },
     "commonAnnotations": {
-        "summary": "命名空间: kubesphere-logging-system | Pod名称: elasticsearch-logging-data-0 CPU使用大于65% (当前值: 71.38808918954389)"
+        "summary": "命名空间: kube-system | Pod名称: everest-csi-driver-plnp7 出口流量大于15MB/s (当前值: 121.62786709096167/K/s)"
     },
     "externalURL": "http://alertmanager.china.com",
     "version": "4",
