@@ -50,6 +50,8 @@ http://ip:9100/metrics访问
 如果是按照我之前的在k8s中部署的prometheus 打开prometheus-configmap.yaml
 
 进行添加 | 修改
+
+也可使用consul，这里不再赘述
 ```
     - job_name: linux-node
       static_configs:
