@@ -1,7 +1,7 @@
 # 钉钉报警插件已打包在镜像，不想麻烦的可以直接pull
 docker pull alexcld/alertgo:v5
 ## 其他两个平台实时同步
-* 个人Blog：https://blog.alexcld.com https://vue.alexcld.com
+* 个人Blog：https://blogtest.alexcld.com https://vue.alexcld.com
 * CSDN：https://blog.csdn.net/weixin_45509582
 
 加密token,token变量指的是顶顶机器人webhook所携带的token
