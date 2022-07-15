@@ -54,8 +54,8 @@ spec:
           hostPath:
             path: /sys
         - name: rootfs
-          hostPath:
-            path: /
+              mountPath: /rootfs
+              readOnly: true
         - name: dev
           hostPath:
             path: /dev
