@@ -1,24 +1,24 @@
-apiVersion: apps/v1 
+apiVersion: apps/v1
 kind: DaemonSet
 metadata:
-  name: node-exporter 
-  namespace: ops 
+  name: node-exporter
+  namespace: ops
   labels:
-    k8s-app: node-exporter 
+    k8s-app: node-exporter
 spec:
   selector:
     matchLabels:
       k8s-app: node-exporter
-      version: v1.0.1
+      version: v1.4.0
   template:
     metadata:
       labels:
-        k8s-app: node-exporter 
-        version: v1.0.1
+        k8s-app: node-exporter
+        version: v1.4.0
     spec:
       containers:
         - name: prometheus-node-exporter
-          image: "prom/node-exporter:v1.0.1"
+          image: "alexcld/node-exporter-port-9910:v.1.4.0"
           #imagePullPolicy: "Always"
           args:
             - --path.procfs=/host/proc
@@ -27,8 +27,8 @@ spec:
             - --collector.filesystem.ignored-mount-points=^/(dev|proc|sys|boot|run)($|/)
           ports:
             - name: metrics
-              containerPort: 9100
-              hostPort: 9100
+              containerPort: 9910
+              hostPort: 9910
           volumeMounts:
             - name: proc
               mountPath: /host/proc
@@ -36,13 +36,13 @@ spec:
             - name: sys
               mountPath: /host/sys
               readOnly: true
-          resources:
-            limits:
-              cpu: 10m
-              memory: 50Mi
-            requests:
-              cpu: 10m
-              memory: 50Mi
+          #resources:
+          #  limits:
+          #    cpu: 10m
+          #    memory: 50Mi
+          #  requests:
+          #    cpu: 10m
+          #    memory: 50Mi
       hostNetwork: true
       hostPID: true
       hostIPC: true
@@ -54,8 +54,8 @@ spec:
           hostPath:
             path: /sys
         - name: rootfs
-              mountPath: /rootfs
-              readOnly: true
+          hostPath:
+            path: /rootfs
         - name: dev
           hostPath:
             path: /dev
@@ -71,8 +71,8 @@ spec:
   clusterIP: None
   ports:
     - name: metrics
-      port: 9100
+      port: 9910
       protocol: TCP
-      targetPort: 9100
+      targetPort: 9910
   selector:
     k8s-app: node-exporter
