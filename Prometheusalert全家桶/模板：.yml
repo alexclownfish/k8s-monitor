@@ -2,23 +2,27 @@
 
 {{ $var := .externalURL}}{{ range $k,$v:=.alerts }}
 {{if eq $v.status "resolved"}}
-## [Prometheus恢复信息]({{$v.generatorURL}})
-#### [{{$v.labels.alertname}}]({{$var}})
-###### <font color="#02b340">告警集群</font>：{{$v.labels.cluster}}
+## <font color="#02b340">Prometheus恢复信息</font>
+#### <font color="#02b340">{{$v.labels.alertname}}</font>
+###### <font color="#02b340">告警集群</font>：{{$v.labels.k8scluster}}
 ###### <font color="#02b340">告警级别</font>：{{$v.labels.severity}}
 ###### <font color="#02b340">开始时间</font>：{{GetCSTtime $v.startsAt}}
 ###### <font color="#02b340">结束时间</font>：{{GetCSTtime $v.endsAt}}
 ###### <font color="#02b340">故障主机IP</font>：{{$v.labels.instance}}
-##### `Annotations：`{{$v.annotations.summary}}
+###### Annotations：{{$v.annotations.summary}}
+##### [点击进入Prometheus控制台]({{$v.generatorURL}})
+##### [点击进入Alertmanager控制台]({{$var}})
 ![Prometheus](https://img.alexcld.com/img/prometheus-resolve.jpg)
 {{else}}
-## [Prometheus告警信息]({{$v.generatorURL}})
-#### [{{$v.labels.alertname}}]({{$var}})
-###### <font color="#FF0000">告警集群</font>：{{$v.labels.cluster}}
+## <font color="#FF0000">Prometheus告警信息</font>
+#### <font color="#FF0000">{{$v.labels.alertname}}</font>
+###### <font color="#FF0000">告警集群</font>：{{$v.labels.k8scluster}}
 ###### <font color="#FF0000">告警级别</font>：{{$v.labels.severity}}
 ###### <font color="#FF0000">开始时间</font>：{{GetCSTtime $v.startsAt}}
 ###### <font color="#FF0000">故障主机IP</font>：{{$v.labels.instance}}
-##### `Annotations：`{{$v.annotations.summary}}
+###### Annotations：{{$v.annotations.summary}}
+##### [点击进入Prometheus控制台]({{$v.generatorURL}})
+##### [点击进入Alertmanager控制台]({{$var}})
 ![Prometheus](https://img.alexcld.com/img/prometheus-firing.jpg)
 {{end}}
 {{ end }}
